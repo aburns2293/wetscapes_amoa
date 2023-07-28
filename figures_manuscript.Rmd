@@ -1,0 +1,642 @@
+---
+title: "Figures"
+output: html_document
+date: "2023-06-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Outline
+
+1.  Defining drought
+2.  16S rRNA ASVs clustering
+3.  Functional and phylogenetic assignment of ammonia oxidizers
+
+-   AOA Phylogenetic Tree Construction
+-   AOB 16S rRNA/ITS Blast with \>92.89% identification
+
+4.  2018 drought
+
+-   Nutrient response
+-   16S relative abundance
+-   16S + qPCR - AOA + clades, AOB
+-   Metatranscriptomics support - 2018 wet sites
+
+# Defining Drought
+
+### Necessary packages
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(ggprism)
+library(cluster)
+```
+
+### Necessary data
+
+```{r}
+# daily water table measurements from 06.11.2017 to 18.02.2019
+
+water_table_summary <- read_csv("Defining_Drought/water_table_summary.csv") %>% select(-'...1') %>% filter(Site != 'AW', Site != 'AD') %>% separate(Date, c('Year', 'Month', 'Date'), '-' )
+
+water_table_summary$Year <- as.numeric(water_table_summary$Year)
+
+# sample data
+
+sample_data <- read.csv('PROK Analysis/prok.sample.editednutrients.csv') %>% select(-X)
+
+sample_data$Drought_Status[sample_data$Drought_Status == 'Normal'] <- 'Non-drought'
+
+cluster_wt <- water_table_summary %>%
+  remove_rownames %>% column_to_rownames(var = 'Group.1')
+
+```
+### TO-DO: Precipitation and temperature
+
+```{r}
+# historic weather data to get monthly averages and variation
+# data is CDC data for Greifswald (station 01757)
+
+## precipitation data
+
+greifswald_precip <- read_delim("Drought_Wetscapes/Weather_Data/Regen/produkt_nieder_tag_18980301_20211231_01757.txt", 
+                                                         delim = ";", escape_double = FALSE, trim_ws = TRUE)
+
+greifswald_precip$MESS_DATUM <- as.character(greifswald_precip$MESS_DATUM)
+
+greifswald_precip$MESS_DATUM <- as.Date(greifswald_precip$MESS_DATUM, format = '%Y%m%d')
+
+greifswald_precip$JAHR <- as.numeric(format(greifswald_precip$MESS_DATUM, "%Y"))
+
+greifswald_precip$MONAT <- as.numeric(format(greifswald_precip$MESS_DATUM, "%m"))
+
+greifswald_precip$TAG <- as.numeric(format(greifswald_precip$MESS_DATUM, "%d"))
+
+## temperature data
+
+greifswald_temp <- read_delim("Drought_Wetscapes/Weather_Data/Temperatur/produkt_tu_termin_18980301_20211231_01757.txt", delim = ";", escape_double = FALSE, trim_ws = TRUE)
+
+greifswald_temp$MESS_DATUM <- as.character(greifswald_temp$MESS_DATUM)
+
+greifswald_temp$MESS_DATUM <- substr(greifswald_temp$MESS_DATUM, 1, nchar(greifswald_temp$MESS_DATUM)-2)
+  
+greifswald_temp$MESS_DATUM <- as.Date(greifswald_temp$MESS_DATUM, format = '%Y%m%d')
+
+greifswald_temp <- greifswald_temp %>% group_by(MESS_DATUM) %>% summarise(MEAN_TEMP = mean(TT_TER), MEAN_HUM = mean(RF_TER))
+
+## combine for weather data and sort into after 2010
+
+greifswald_weather <- left_join(greifswald_precip, greifswald_temp, by = 'MESS_DATUM')
+
+greifswald_weather <- greifswald_weather %>% filter(JAHR >= 2000)
+
+## summarise monthly weather
+
+greifswald_weather_sum <- greifswald_weather %>% group_by(JAHR, MONAT) %>% summarise(mean_temp = mean(MEAN_TEMP), sd_temp = sd(MEAN_TEMP),
+                                                                                     mean_hum = mean(MEAN_HUM), sd_hum = sd(MEAN_HUM),
+                                                                                     mean_precip = mean(RS), sd_precip = sd(RS)) %>%
+  arrange(MONAT)
+
+greifswald_weather_sum <- greifswald_weather_sum %>% add_column(Drought_Status = NA)
+
+greifswald_weather_sum$Drought_Status[greifswald_weather_sum$JAHR == 2018 & greifswald_weather_sum$MONAT == 5 |
+                                        greifswald_weather_sum$JAHR == 2018 & greifswald_weather_sum$MONAT == 6 |
+                                        greifswald_weather_sum$JAHR == 2018 & greifswald_weather_sum$MONAT == 7 |
+                                        greifswald_weather_sum$JAHR == 2018 & greifswald_weather_sum$MONAT == 8 |
+                                        greifswald_weather_sum$JAHR == 2018 & greifswald_weather_sum$MONAT == 9 |
+                                        greifswald_weather_sum$JAHR == 2018 & greifswald_weather_sum$MONAT == 10 |
+                                        greifswald_weather_sum$JAHR == 2018 & greifswald_weather_sum$MONAT == 11] <- 'Drought'
+
+greifswald_weather_sum$Drought_Status[greifswald_weather_sum$JAHR == 2019 & greifswald_weather_sum$MONAT == 5 |
+                                        greifswald_weather_sum$JAHR == 2019 & greifswald_weather_sum$MONAT == 6 |
+                                        greifswald_weather_sum$JAHR == 2019 & greifswald_weather_sum$MONAT == 7 |
+                                        greifswald_weather_sum$JAHR == 2019 & greifswald_weather_sum$MONAT == 8 |
+                                        greifswald_weather_sum$JAHR == 2019 & greifswald_weather_sum$MONAT == 9 |
+                                        greifswald_weather_sum$JAHR == 2019 & greifswald_weather_sum$MONAT == 10 |
+                                        greifswald_weather_sum$JAHR == 2019 & greifswald_weather_sum$MONAT == 4] <- 'Drought'
+
+greifswald_weather_sum$Drought_Status[greifswald_weather_sum$JAHR == 2017 & greifswald_weather_sum$MONAT == 11 |
+                                        greifswald_weather_sum$JAHR == 2017 & greifswald_weather_sum$MONAT == 12 |
+                                        greifswald_weather_sum$JAHR == 2018 & greifswald_weather_sum$MONAT == 1 |
+                                        greifswald_weather_sum$JAHR == 2018 & greifswald_weather_sum$MONAT == 2 |
+                                        greifswald_weather_sum$JAHR == 2018 & greifswald_weather_sum$MONAT == 3 |
+                                        greifswald_weather_sum$JAHR == 2018 & greifswald_weather_sum$MONAT == 4 |
+                                        greifswald_weather_sum$JAHR == 2018 & greifswald_weather_sum$MONAT == 12] <- 'Normal'
+
+greifswald_weather_sum$Drought_Status[greifswald_weather_sum$JAHR == 2019 & greifswald_weather_sum$MONAT == 1 |
+                                        greifswald_weather_sum$JAHR == 2019 & greifswald_weather_sum$MONAT == 2 |
+                                        greifswald_weather_sum$JAHR == 2019 & greifswald_weather_sum$MONAT == 3 |
+                                        greifswald_weather_sum$JAHR == 2019 & greifswald_weather_sum$MONAT == 11 |
+                                        greifswald_weather_sum$JAHR == 2019 & greifswald_weather_sum$MONAT == 12 |
+                                        greifswald_weather_sum$JAHR == 2020 & greifswald_weather_sum$MONAT == 1 |
+                                        greifswald_weather_sum$JAHR == 2020 & greifswald_weather_sum$JAHR == 2] <- 'Normal'
+
+greifswald_weather_sum$Drought_Status[is.na(greifswald_weather_sum$Drought_Status)] <- 'Unknown'
+
+# merging with sample data
+
+greifswald_weather_sum$year_abbr <- greifswald_weather_sum$JAHR - round(greifswald_weather_sum$JAHR, -2)
+
+greifswald_weather_sum <- greifswald_weather_sum %>%
+  mutate(Date = paste0(MONAT, '-', year_abbr))
+
+Prok_Sample_CP$date <- as.Date(Prok_Sample_CP$date, format = '%Y_%m_%d')
+
+Prok_Sample_CP$Date <- Prok_Sample_CP$date
+
+Prok_Sample_CP$Date <- format(as.Date(Prok_Sample_CP$Date, format = '%Y_%m_%d'), '%m-%y')
+
+Prok_Sample_CP$Date <- as.character(Prok_Sample_CP$Date)
+
+for (i in 1:nrow(Prok_Sample_CP)) if(substr(Prok_Sample_CP$Date[i], 1, 1) == 0) {
+  Prok_Sample_CP$Date[i] <- substr(Prok_Sample_CP$Date[i], 2, nchar(Prok_Sample_CP$Date[i]))
+}
+else{
+  Prok_Sample_CP$Date[i] <- Prok_Sample_CP$Date[i]
+}
+
+drought_clusters_wide$Date <- as.character(drought_clusters_wide$Date)
+
+Prok_Sample_CP <- left_join(Prok_Sample_CP, greifswald_weather_sum, by = 'Date')
+
+Prok_Sample_CP <- Prok_Sample_CP %>%
+  select(-c(JAHR, MONAT, year_abbr))
+
+Prok_Sample_CP <- left_join(Prok_Sample_CP, drought_clusters_wide, by = c('loc' = 'Site', 'Date'))
+
+```
+
+
+
+### TO-DO: Clustering water table values
+
+```{r}
+# clustering function
+
+wt.cluster.optimal_number <- function(wt_data, site){
+  
+  site_wt <- wt_data %>% filter(Site == site) %>% select(GW_level) %>% na.omit()
+  
+  site_wt_matrix <- as.matrix(site_wt)
+  
+  site_clus <- clusGap(site_wt_matrix, kmeans, K.max = 10, B = 500)
+  
+  print(plot(site_clus)) }
+
+wt.cluster.full <- function(wt_data, optimal_number, site) {
+  
+  site_opt_num <- as.integer(optimal_number)
+  
+  site_wt <- wt_data %>% filter(Site == site) %>% select(GW_level) %>% na.omit()
+  
+  site_wt_matrix <- as.matrix(site_wt)
+  
+  set.seed(11)
+
+  site_wt_km <- kmeans(site_wt_matrix, site_opt_num)
+
+  site_wt$clusters <- as.factor(site_wt_km$cluster)
+  
+  return(site_wt) }
+```
+
+### PW Drought Threshold
+
+```{r}
+# PW drought threshold
+
+pw_wt_opt <- wt.cluster.optimal_number(cluster_wt, 'PW')
+
+pw_wt_opt
+
+pw_wt <- wt.cluster.full(cluster_wt, 2, 'PW')
+
+ggplot(pw_wt) + geom_boxplot(aes(x = clusters, y = GW_level))
+
+pw_wt <- pw_wt %>% add_column(Drought_Status = NA)
+
+# before entering these variables, make sure that the cluster with the higher average water table in the plot corresponds to 'non-drought'
+
+pw_wt$Drought_Status[pw_wt$clusters == 1] <- 'Non-Drought'
+pw_wt$Drought_Status[pw_wt$clusters == 2] <- 'Drought'
+
+pw_wt <- pw_wt %>% select(-GW_level)
+
+pw_cluster <- cluster_wt %>% filter(Site == 'PW')
+
+pw_cluster <- merge(pw_cluster, pw_wt, by = 'row.names')
+
+pw_totals <- pw_cluster %>% group_by(Year, Month, Drought_Status) %>% summarise(status_count = n())
+
+pw_totals <- pw_totals %>% pivot_wider(id_cols = c(Year, Month), names_from = Drought_Status, values_from = status_count, values_fill = 0)
+
+pw_totals <- pw_totals %>% mutate(Total = Drought + `Non-Drought`,
+                                  Drought_Prop = Drought/Total,
+                                  Site = 'PW')
+
+pw_sum <- pw_cluster %>% group_by(Drought_Status) %>% summarise(max = max(GW_level), min = min(GW_level), mean = mean(GW_level))
+
+```
+
+### PD drought threshold
+
+### CW drought threshold
+
+### CD drought threshold
+
+# adding cluster data and cleaning
+
+```{r}
+# add date to full water table data
+
+water_table_summary <- water_table_summary %>% mutate(Full_Date = str_c('20',water_table_summary$Year,'-',water_table_summary$Month,'-',water_table_summary$Date))
+
+water_table_summary$Full_Date <- as.Date(water_table_summary$Full_Date)
+
+# monthly average water table values
+
+water_table_monthly <- water_table_summary %>% na.omit() %>% group_by(Site, Year, Month) %>% summarise(Mean_GW = mean(GW_level), SD_GW = sd(GW_level))
+
+# annual average water table values
+
+annual_avg <- water_table_summary %>% na.omit() %>% filter(Site != 'AW', Site != 'AD') %>% group_by(Site) %>% summarise(mean_gw = mean(GW_level), sd_gw = sd(GW_level), mean_t = mean(GW_temp), sd_t = sd(GW_temp))
+
+# assigning drought status according to drought threshold determined for each site via k-means clustering
+# drought thresholds (water table depth below surface in cm): PW = -5.45, PD = -31.05, CW = -30.24, CD = -45.88
+
+water_table_pw <- water_table_summary %>% filter(Site == 'PW') %>% add_column(Drought = 'Non-drought') 
+
+water_table_pw$Drought[water_table_pw$GW_level < -5.45] <- 'Drought'
+
+water_table_pd <- water_table_summary %>% filter(Site == 'PD') %>% add_column(Drought = 'Non-drought')
+
+water_table_pd$Drought[water_table_pd$GW_level < -31.05] <- 'Drought'
+
+water_table_cw <- water_table_summary %>% filter(Site == 'CW') %>% add_column(Drought = 'Non-drought')
+
+water_table_cw$Drought[water_table_cw$GW_level < -30.24] <- 'Drought'
+
+water_table_cd <- water_table_summary %>% filter(Site == 'CD') %>% add_column(Drought = 'Non-drought')
+
+water_table_cd$Drought[water_table_cd$GW_level < -45.88] <- 'Drought'
+
+water_table_drought <- rbind(water_table_pw, water_table_pd, water_table_cw, water_table_cd)
+
+# separate topsoil values from sample data
+
+sample_topsoil <- sample_data %>% filter(depth == '05-10 cm')
+
+```
+
+### Daily average groundwater depth
+
+```{r}
+ggplot(water_table_summary) + 
+  geom_line(aes(x = as.Date(Full_Date), y = GW_level, col = Site)) +
+  theme_classic() +
+  ylab('Water table depth from surface (cm)') +
+  xlab('') +
+  geom_hline(yintercept = -5.45, col = 'purple', linetype = 'dashed') +
+  geom_hline(yintercept = -31.05, col = '#00BFC4', linetype = 'dashed') +
+  geom_hline(yintercept = -30.24, col = '#7CAE00', linetype = 'dashed') +
+  geom_hline(yintercept = -45.88, col = 'red', linetype = 'dashed') +
+  ggtitle('Daily water table depth values with drought thresholds, 2017-09 to 2020-02') +
+  scale_y_continuous(breaks = seq(-100,50,25))
+```
+
+### Relationship between groundwater depth and drought status
+
+```{r}
+wilcox.test(GW_level ~ Drought, data = water_table_pw)
+wilcox.test(GW_level ~ Drought, data = water_table_pd)
+wilcox.test(GW_level ~ Drought, data = water_table_cw)
+wilcox.test(GW_level ~ Drought, data = water_table_cd)
+```
+
+```{r}
+ggplot(water_table_drought) +
+  geom_boxplot(aes(x = Site, y = GW_level, col = Drought)) +
+  theme_classic() +
+  ggtitle('Relationship between drought status and water table depth') +
+  ylab('Water table depth from surface (cm)') +
+  xlab('') +
+  annotate('text', x=c(1, 2, 2.9, 3.9), y=c(5,48,10,12), label='***') +
+  labs(color = NULL)
+```
+
+### Topsoil water content and groundwater depth
+
+```{r}
+ggplot(sample_topsoil, aes(x=Mean_GW, y =water, col = loc, group=loc)) +
+  geom_point() +
+  geom_smooth(se=FALSE) +
+  theme_classic() +
+  ylab('Relative water weight (%)') +
+  xlab('Water table depth from surface (cm)') +
+  labs(color = 'Site') +
+  ggtitle('Relationship between water table depth and topsoil water content')
+```
+
+### Relative water content and drought
+
+```{r}
+wilcox.test(water ~ Drought_Status, data = sample_topsoil[sample_topsoil$loc == 'PW',])
+wilcox.test(water ~ Drought_Status, data = sample_topsoil[sample_topsoil$loc == 'PD',])
+wilcox.test(water ~ Drought_Status, data = sample_topsoil[sample_topsoil$loc == 'CD',])
+wilcox.test(water ~ Drought_Status, data = sample_topsoil[sample_topsoil$loc == 'CW',])
+```
+
+```{r}
+ggplot(sample_topsoil, aes(x=loc, y=water, col = Drought_Status)) +
+  geom_boxplot() +
+  theme_classic() +
+  labs(color = NULL) +
+  xlab('') +
+  ylab('Relative water weight (%)') +
+  annotate('text', x=c(1, 2, 2.9, 3.9), y=c(78,78,95,100), label=c('p=0.03','p=0.12','p=0.01','p=0.28')) +
+  ggtitle('Topsoil water content during drought phases')
+  
+```
+
+# 16S rRNA ASVs clustering
+
+### Necessary packages
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(ggrepel)
+library(vegan)
+```
+
+### Necessary data
+
+```{r}
+asv <- read.csv('PROK Analysis/prok.asv.wo-adler.csv') %>% remove_rownames() %>% column_to_rownames('X') 
+
+sample <- read.csv('PROK Analysis/prok.sample.editednutrients.csv') %>% select(-X)
+```
+
+### Function for NMDS plots
+
+```{r}
+nmds.data <- function(asv, sample, site) {
+  
+  if(site != 'all') {
+    
+    site.asv <- asv[, str_detect(colnames(asv), site)]
+    
+    site.asv$row.sums <- rowSums(site.asv)
+    
+    site.asv.clean <- site.asv %>% filter(row.sums != 0) %>% select(-row.sums)
+    
+    site.asv.t <- as.data.frame(t(site.asv.clean))
+    
+    site.asv.rel <- decostand(site.asv.t, method = 'total')
+    
+    site.mds <- metaMDS(site.asv.rel, distance = 'bray', autotransform = FALSE)
+    
+    return(site.mds)
+    
+  }else{ 
+    
+    asv$row.sums <- rowSums(asv)
+    
+    asv.clean <- asv %>% filter(row.sums != 0) %>% select(-row.sums)
+    
+    asv.t <- as.data.frame(t(asv.clean))
+    
+    asv.rel <- decostand(asv.t, method = 'total')
+    
+    mds <- metaMDS(asv.rel, distance = 'bray', autotransform = FALSE)
+    
+    return(mds)
+    
+    }
+}
+
+sample.nmds.data <- function(mds, sample, site) {
+  
+  if(site != 'all') {
+    
+    site.mds <- mds
+    
+    site.scores <- scores(site.mds)
+
+    site.scores <- as.data.frame(site.scores$sites)
+
+    site.scores$Sample <- rownames(site.scores)
+    
+    site.sample <- sample[sample$loc == site,]
+
+    site.sample.new <- left_join(site.sample, site.scores, by = 'Sample')
+    
+    return(site.sample.new)
+    
+  }else{ 
+    
+    scores <- scores(mds)
+
+    site.scores <- as.data.frame(scores$sites)
+
+    site.scores$Sample <- rownames(site.scores)
+
+    sample.new <- left_join(sample, site.scores, by = 'Sample')
+    
+    return(sample.new)
+    
+    }
+}
+
+```
+
+### Full dataset clustering
+
+```{r}
+nmds <- nmds.data(asv, sample, 'all')
+
+full.sample <- sample.nmds.data(nmds, sample, 'all')
+
+ggplot(full.sample, aes(x = NMDS1, y = NMDS2)) + 
+  geom_point(aes(col = as.factor(loc))) +
+  theme_classic() +
+  labs(col = 'Site') +
+  ggtitle('All sites: 16S ASV Community Composition')
+
+```
+
+```{r}
+# anosim and betadisper tests (which to use?)
+
+asv$row.sums <- rowSums(asv)
+    
+asv.clean <- asv %>% filter(row.sums != 0) %>% select(-row.sums)
+    
+asv.t <- as.data.frame(t(asv.clean))
+
+asv.rel <- decostand(asv.t, method = 'total')
+
+dist <- vegdist(asv.rel, method = "bray")
+
+beta <- betadisper(dist, group = sample$loc)
+
+anova(beta)
+
+perm <- adonis2(dist ~ sample$loc, permutations = 999)
+
+perm
+```
+
+### PW clustering
+
+```{r}
+pw.nmds <- nmds.data(asv, sample, 'PW')
+
+pw.sample <- sample.nmds.data(pw.nmds, sample, 'PW')
+
+pw.env.var <- pw.sample %>% select(Sample, depth, NO3, NH4, Drought_Status) %>% remove_rownames() %>% column_to_rownames(var = 'Sample')
+
+pw.env <- envfit(pw.nmds, pw.env.var, na.rm = TRUE)
+    
+pw.env
+
+pw.scores <- as.data.frame(scores(pw.nmds)$sites)
+
+pw.scores$depth <- pw.sample$depth
+
+pw.cont <- as.data.frame(scores(pw.env, "vectors")) * ordiArrowMul(pw.env)
+pw.cat <- as.data.frame(scores(pw.env, "factors")) * ordiArrowMul(pw.env)
+
+ggplot(pw.scores, aes(x = NMDS1, y = NMDS2)) + 
+  geom_point(aes(col = as.factor(depth))) +
+  geom_segment(aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2), 
+               data = pw.cont) +
+  geom_point(data = pw.cat, aes(x = NMDS1, y = NMDS2), 
+             shape = "diamond", size = 4, alpha = 0.6, colour = "navy") +
+  geom_text_repel(data = pw.cat, aes(x = NMDS1, y = NMDS2+0.04), 
+            label = row.names(pw.cat), colour = "navy", fontface = "bold") + 
+  geom_text_repel(data = pw.cont, aes(x = NMDS1, y = NMDS2), colour = "grey30", 
+            fontface = "bold", label = row.names(pw.cont)) + 
+  theme_classic() +
+  labs(col = 'Depth') +
+  ggtitle('PW: 16S ASV NMDS with Envfit')
+
+```
+
+### PD clustering
+
+```{r}
+pd.nmds <- nmds.data(asv, sample, 'PD')
+
+pd.sample <- sample.nmds.data(pd.nmds, sample, 'PD')
+
+pd.env.var <- pd.sample %>% select(Sample, depth, NO3, NH4, Drought_Status) %>% remove_rownames() %>% column_to_rownames(var = 'Sample')
+
+pd.env <- envfit(pd.nmds, pd.env.var, na.rm = TRUE)
+    
+pd.env
+
+pd.scores <- as.data.frame(scores(pd.nmds)$sites)
+
+pd.scores$depth <- pd.sample$depth
+
+pd.cont <- as.data.frame(scores(pd.env, "vectors")) * ordiArrowMul(pd.env)
+pd.cat <- as.data.frame(scores(pd.env, "factors")) * ordiArrowMul(pd.env)
+
+ggplot(pd.scores, aes(x = NMDS1, y = NMDS2)) + 
+  geom_point(aes(col = as.factor(depth))) +
+  geom_segment(aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2), 
+               data = pd.cont) +
+  geom_point(data = pd.cat, aes(x = NMDS1, y = NMDS2), 
+             shape = "diamond", size = 4, alpha = 0.6, colour = "navy") +
+  geom_text_repel(data = pd.cat, aes(x = NMDS1, y = NMDS2+0.04), 
+            label = row.names(pd.cat), colour = "navy", fontface = "bold") + 
+  geom_text_repel(data = pd.cont, aes(x = NMDS1, y = NMDS2), colour = "grey30", 
+            fontface = "bold", label = row.names(pd.cont)) + 
+  theme_classic() +
+  labs(col = 'Depth') +
+  ggtitle('PD: 16S ASV NMDS with Envfit')
+
+```
+
+### CW clustering
+
+```{r}
+cw.nmds <- nmds.data(asv, sample, 'CW')
+
+cw.sample <- sample.nmds.data(cw.nmds, sample, 'CW')
+
+cw.env.var <- cw.sample %>% select(Sample, depth, NO3, NH4, Drought_Status) %>% remove_rownames() %>% column_to_rownames(var = 'Sample')
+
+cw.env <- envfit(cw.nmds, cw.env.var, na.rm = TRUE)
+    
+cw.env
+
+cw.scale <- ordiArrowMul(cw.env)
+
+cw.scores <- as.data.frame(scores(cw.nmds)$sites)
+
+cw.scores$depth <- cw.sample$depth
+
+cw.cont <- as.data.frame(scores(cw.env, "vectors"))*cw.scale
+cw.cat <- as.data.frame(scores(cw.env, "factors"))*cw.scale
+
+ggplot(cw.scores, aes(x = NMDS1, y = NMDS2)) + 
+  geom_point(aes(col = as.factor(depth))) +
+  geom_segment(aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2), 
+               data = cw.cont) +
+  geom_point(data = cw.cat, aes(x = NMDS1, y = NMDS2), 
+             shape = "diamond", size = 4, alpha = 0.6, colour = "navy") +
+  geom_text_repel(data = cw.cat, aes(x = NMDS1, y = NMDS2+0.04), 
+            label = row.names(cw.cat), colour = "navy", fontface = "bold") + 
+  geom_text_repel(data = cw.cont, aes(x = NMDS1, y = NMDS2), colour = "grey30", 
+            fontface = "bold", label = row.names(cw.cont)) + 
+  theme_classic() +
+  labs(col = 'Depth') +
+  ggtitle('CW: 16S ASV NMDS with Envfit')
+
+```
+
+### CD clustering
+
+```{r}
+cd.nmds <- nmds.data(asv, sample, 'CD')
+
+cd.sample <- sample.nmds.data(cd.nmds, sample, 'CD')
+
+cd.env.var <- cd.sample %>% select(Sample, depth, NO3, NH4, Drought_Status) %>% remove_rownames() %>% column_to_rownames(var = 'Sample')
+
+cd.env <- envfit(cd.nmds, cd.env.var, na.rm = TRUE)
+    
+cd.env
+
+cd.scores <- as.data.frame(scores(cd.nmds)$sites)
+
+cd.depth <- cd.sample %>% remove_rownames() %>% column_to_rownames(var = 'Sample') %>% select(depth)
+
+cd.scores.2 <- merge(cd.scores, cd.depth, by='row.names')
+
+cd.cont <- as.data.frame(scores(cd.env, "vectors")) * ordiArrowMul(cd.env)
+cd.cat <- as.data.frame(scores(cd.env, "factors")) * ordiArrowMul(cd.env)
+
+ggplot(cd.scores.2, aes(x = NMDS1, y = NMDS2)) + 
+  geom_point(aes(col = as.factor(depth))) +
+  geom_segment(aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2), 
+               data = cd.cont) +
+  geom_point(data = cd.cat, aes(x = NMDS1, y = NMDS2), 
+             shape = "diamond", size = 4, alpha = 0.6, colour = "navy") +
+  geom_text_repel(data = cd.cat, aes(x = NMDS1, y = NMDS2+0.04), 
+            label = row.names(cd.cat), colour = "navy", fontface = "bold") + 
+  geom_text_repel(data = cd.cont, aes(x = NMDS1, y = NMDS2), colour = "grey30", 
+            fontface = "bold", label = row.names(cd.cont)) + 
+  theme_classic() +
+  labs(col = 'Depth') +
+  ggtitle('CD: 16S ASV NMDS with Envfit')
+
+```
