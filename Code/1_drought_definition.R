@@ -17,6 +17,7 @@ library(dplyr)
 library(tidyverse)
 library(cluster)
 library(stringr)
+library(lubridate)
 
 ################################################################################
 # Data upload                                                                  #
@@ -24,9 +25,7 @@ library(stringr)
 
 # daily water table measurements from 06.11.2017 to 18.02.2019
 
-water_table_summary <- read_csv("Data/water_table_summary.csv") %>% select(-'...1') %>% 
-  remove_rownames() %>% column_to_rownames(var='Group.1') %>%
-  filter(Site != 'AW', Site != 'AD') %>% separate(Date, c('Year', 'Month', 'Date'), '-' )
+water_table_summary <- read_csv("Data/water_table_summary.csv")
 
 water_table_summary$Year <- as.numeric(water_table_summary$Year)
 
@@ -56,7 +55,10 @@ wt.cluster.optimal_number <- function(wt_data, site){
   
   site_clus <- clusGap(site_wt_matrix, kmeans, K.max = 10, B = 500)
   
-  print(plot(site_clus)) }
+  print(plot(site_clus)) 
+  
+  return(site_clus)
+  }
 
 # takes input of optimal cluster numbers and runs clustering algorithm
 
@@ -85,6 +87,10 @@ wt.cluster.full <- function(wt_data, optimal_number, site) {
 ## weather data has already been added to the 'prok.sample.csv' file, so code here
 ## is not necessary beyond reproducibility purposes
 
+## cleaning water table data
+
+water_table_summary$Date <- ymd(water_table_summary$Date)
+  
 ## cleaning precipitation data
 
 greifswald_precip$MESS_DATUM <- as.character(greifswald_precip$MESS_DATUM)
@@ -126,6 +132,36 @@ greifswald_weather_sum <- greifswald_weather %>% group_by(JAHR, MONAT) %>%
 
 pw_wt_opt <- wt.cluster.optimal_number(water_table_summary, 'PW')
 
+pw.k <- as.data.frame(pw_wt_opt[["Tab"]])
+
+pw.k$k <- row.names(pw.k)
+
+pw.k$k <- factor(pw.k$k, levels = seq(1, 10, 1))
+
+ggplot(pw.k, aes(x = k, y = gap, group = 1)) + geom_line() + geom_point() + 
+  ylab('Gap') +
+  ggtitle('a) PW') + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank()) + 
+  geom_point(aes(x = 2, y = pw.k[pw.k$k == 2,]$gap), shape = 18, size = 5, size = 2)
+
+ggplot(water_table_summary[water_table_summary$Site == 'PW',]) + geom_histogram(aes(x = GW_level)) + geom_vline(aes(xintercept = -5.45), linetype = 2, size = 2) + 
+  ggtitle('a) PW') + 
+  xlab('Groundwater Depth (cm)') + 
+  ylab('Count') + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank())
+
+
+
 ### identify the 'best' cluster from this figure and enter it in the wt.cluster.full function
 ### 'best' - balance between minimal cluster silhouette and minimal number of clusters for interpretation
 
@@ -152,7 +188,37 @@ pd_wt <- wt.cluster.full(water_table_summary, 2, 'PD')
 
 ggplot(pd_wt) + geom_boxplot(aes(x = clusters, y = GW_level))
 
+ggplot(water_table_summary[water_table_summary$Site == 'PD',]) + geom_histogram(aes(x = GW_level)) + geom_vline(aes(xintercept = -31.05), linetype = 2, size = 2) + 
+  ggtitle('b) PD') + 
+  xlab('Groundwater Depth (cm)') + 
+  ylab('Count') + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank())
+  
+
 pd_wt <- pd_wt %>% add_column(Drought_Status = NA)
+
+pd.k <- as.data.frame(pd_wt_opt[["Tab"]])
+
+pd.k$k <- row.names(pd.k)
+
+pd.k$k <- factor(pd.k$k, levels = seq(1, 10, 1))
+
+ggplot(pd.k, aes(x = k, y = gap, group = 1)) + geom_line() + geom_point() + 
+  ylab('Gap') +
+  ggtitle('b) PD') + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank()) + 
+  geom_point(aes(x = 2, y = pd.k[pd.k$k == 2,]$gap), shape = 18, size = 5, size = 2)
+
 
 ### before entering these variables, make sure that the cluster with the higher average water table in the plot corresponds to 'non-drought'
 
@@ -171,6 +237,36 @@ ggplot(cw_wt) + geom_boxplot(aes(x = clusters, y = GW_level))
 
 cw_wt <- cw_wt %>% add_column(Drought_Status = NA)
 
+cw.k <- as.data.frame(cw_wt_opt[["Tab"]])
+
+cw.k$k <- row.names(cw.k)
+
+cw.k$k <- factor(cw.k$k, levels = seq(1, 10, 1))
+
+ggplot(cw.k, aes(x = k, y = gap, group = 1)) + geom_line() + geom_point() + 
+  ylab('Gap') +
+  ggtitle('c) CW') + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank()) + 
+  geom_point(aes(x = 2, y = cw.k[cw.k$k == 2,]$gap), shape = 18, size = 5, size = 2)
+
+ggplot(water_table_summary[water_table_summary$Site == 'CW',]) + geom_histogram(aes(x = GW_level)) + geom_vline(aes(xintercept = -30.24), linetype = 2, size = 2) + 
+  ggtitle('c) CW') + 
+  xlab('Groundwater Depth (cm)') + 
+  ylab('Count') + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank())
+
+
+
 ### before entering these variables, make sure that the cluster with the higher average water table in the plot corresponds to 'non-drought'
 
 cw_wt$Drought_Status[cw_wt$clusters == 1] <- 'Non-Drought'
@@ -187,6 +283,34 @@ cd_wt <- wt.cluster.full(water_table_summary, 2, 'CD')
 ggplot(cd_wt) + geom_boxplot(aes(x = clusters, y = GW_level))
 
 cd_wt <- cd_wt %>% add_column(Drought_Status = NA)
+
+cd.k <- as.data.frame(cd_wt_opt[["Tab"]])
+
+cd.k$k <- row.names(cd.k)
+
+cd.k$k <- factor(cd.k$k, levels = seq(1, 10, 1))
+
+ggplot(cd.k, aes(x = k, y = gap, group = 1)) + geom_line() + geom_point() + 
+  ylab('Gap') +
+  ggtitle('d) CD') + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank()) + 
+  geom_point(aes(x = 2, y = cd.k[cd.k$k == 2,]$gap), shape = 18, size = 5, size = 2)
+
+ggplot(water_table_summary[water_table_summary$Site == 'CD',]) + geom_histogram(aes(x = GW_level)) + geom_vline(aes(xintercept = -45.88), linetype = 2, size = 2) + 
+  ggtitle('d) CD') + 
+  xlab('Groundwater Depth (cm)') + 
+  ylab('Count') + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank())
 
 ### before entering these variables, make sure that the cluster with the higher average water table in the plot corresponds to 'non-drought'
 
@@ -221,18 +345,29 @@ full_drought_wt$Date <- as.Date(full_drought_wt$Date)
 
 # Groundwater table depth with drought thresholds
 
-ggplot(full_drought_wt) + 
+library(RColorBrewer)
+
+ggplot(water_table_summary) + 
   geom_line(aes(x = Date, y = GW_level, col = Site)) +
   theme_classic() +
-  ylab('Water table depth from surface (cm)') +
+  ylab('Depth below surface (cm)') +
   xlab('') +
-  geom_hline(yintercept = -5.45, col = 'purple', linetype = 'dashed') +
-  geom_hline(yintercept = -31.05, col = '#00BFC4', linetype = 'dashed') +
-  geom_hline(yintercept = -30.24, col = '#7CAE00', linetype = 'dashed') +
-  geom_hline(yintercept = -45.88, col = 'red', linetype = 'dashed') +
-  ggtitle('Daily water table depth values with drought thresholds, 2017-09 to 2020-02') +
-  scale_y_continuous(breaks = seq(-100,50,25))
-
+  geom_hline(yintercept = -5.45, col = "#E6AB02", linetype = 'dashed', size = 1) +
+  geom_hline(yintercept = -31.05, col = "#7570B3", linetype = 'dashed', size = 1) +
+  geom_hline(yintercept = -30.24, col = "#D95F02", linetype = 'dashed', size = 1) +
+  geom_hline(yintercept = -45.88, col = "#1B9E77", linetype = 'dashed', size = 1) +
+  scale_y_continuous(breaks = seq(-100,50,25)) + 
+  scale_color_manual(values = c("#1B9E77", "#D95F02", "#7570B3", "#E6AB02")) + 
+  scale_x_date(breaks = seq(as.Date('2017-12-01'), as.Date('2020-02-21'), by = "6 months"), date_labels = '%y-%b') +
+  theme(axis.title=element_text(size=24,face = "bold"),
+        axis.text=element_text(size=20,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, linewidth=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank()) + 
+  guides(color = guide_legend(list(linetype = c(1, 1, 1, 1) ) ) )
+  
 # Relationship between groundwater depth and drought status
 
 wilcox.test(GW_level ~ Drought_Status, data = pw_wt)
