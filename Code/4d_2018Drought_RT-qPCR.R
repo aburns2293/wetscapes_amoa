@@ -41,7 +41,7 @@ qpcr.long.summary$Date <- factor(qpcr.long.summary$Date, levels = c('2018-04', '
 
 # combined qpcr and rt qpcr data
 
-qpcr <- read_xlsx('../wetscapes/AmoA_qPCR/qPCR_table_amoA.xlsx')
+qpcr <- read.csv('./Data/amoa.qpcr.csv')
 
 qpcr <- rename(qpcr, water = `Soil moisture (% wet soil)`)
 qpcr <- rename(qpcr, AOA = `A-AmoA gene copies per gram dry soil`)

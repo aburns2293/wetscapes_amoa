@@ -4,7 +4,7 @@
 # qPCR Results for 2018 Drought Samples                                        #
 #                                                                              #
 # Author: Anna Burns                                                           #
-# Last edited: 19.04.2023                                                      #
+# Last edited: 23.04.2023                                                      #
 #                                                                              #
 ################################################################################
 
@@ -22,11 +22,12 @@ library(readxl)
 # Data upload                                                                  #
 ################################################################################
 
-full_data <- read.csv('../wetscapes/AmoA_qPCR/long_qpcr_wt.csv')
-full_data$Date2 <- ymd(full_data$Date2)
-long_qpcr_clean <- read_csv("~/wetscapes/AmoA_qPCR/long_qpcr_clean.csv")
+qpcr <- read.csv('./Data/amoa.qpcr.csv')
 
-full_data2 <- full_data %>% filter(Domain != 'Water')
+qpcr.summary <- qpcr %>% group_by(Site, Date, Domain) %>% summarise(mean = mean(Abundance),
+                                                                    sd = sd(Abundance),
+                                                                    n = n(),
+                                                                    se = sd/sqrt(n))
 
 ################################################################################
 # Figures and Statistics                                                       #
@@ -34,7 +35,7 @@ full_data2 <- full_data %>% filter(Domain != 'Water')
 
 ## PW
 
-ggplot(full_data2[full_data2$Site == 'PW',], aes(x = Date, y = mean, col = Domain, group = Domain)) +
+ggplot(qpcr.summary[qpcr.summary$Site == 'PW',], aes(x = Date, y = mean, col = Domain, group = Domain)) +
   geom_point(aes(shape = Domain), size = 10) + 
   geom_line(linewidth = 1.3) + 
   theme_classic() + 
@@ -53,13 +54,13 @@ ggplot(full_data2[full_data2$Site == 'PW',], aes(x = Date, y = mean, col = Domai
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
 
-kruskal.test(Abundance~Date2, data = long_qpcr_clean[long_qpcr_clean$Domain == 'AOB' & long_qpcr_clean$Site == 'PW',])
-kruskal_effsize(Abundance~Date2, data = long_qpcr_clean[long_qpcr_clean$Domain == 'AOB' & long_qpcr_clean$Site == 'PW',])
-dunn_test(Abundance~Date2, data = long_qpcr_clean[long_qpcr_clean$Domain == 'AOB' & long_qpcr_clean$Site == 'PW',], p.adjust.method = 'bonferroni')
+kruskal.test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PW',])
+kruskal_effsize(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PW',])
+dunn_test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PW',], p.adjust.method = 'bonferroni')
 
 ## PD
 
-ggplot(full_data2[full_data2$Site == 'PD',], aes(x = Date, y = mean, col = Domain, group = Domain)) +
+ggplot(qpcr.summary[qpcr.summary$Site == 'PD',], aes(x = Date, y = mean, col = Domain, group = Domain)) +
   geom_point(aes(shape = Domain), size = 10) + 
   geom_line(linewidth = 1.3) + 
   theme_classic() + 
@@ -78,13 +79,13 @@ ggplot(full_data2[full_data2$Site == 'PD',], aes(x = Date, y = mean, col = Domai
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
 
-kruskal.test(Abundance~Date2, data = long_qpcr_clean[long_qpcr_clean$Domain == 'AOB' & long_qpcr_clean$Site == 'PD',])
-kruskal_effsize(Abundance~Date2, data = long_qpcr_clean[long_qpcr_clean$Domain == 'AOB' & long_qpcr_clean$Site == 'PD',])
-dunn_test(Abundance~Date2, data = long_qpcr_clean[long_qpcr_clean$Domain == 'AOB' & long_qpcr_clean$Site == 'PD',], p.adjust.method = 'bonferroni')
+kruskal.test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PD',])
+kruskal_effsize(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PD',])
+dunn_test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PD',], p.adjust.method = 'bonferroni')
 
 ## CW
 
-ggplot(full_data2[full_data2$Site == 'CW',], aes(x = Date, y = mean, col = Domain, group = Domain)) +
+ggplot(qpcr.summary[qpcr.summary$Site == 'CW',], aes(x = Date, y = mean, col = Domain, group = Domain)) +
   geom_point(aes(shape = Domain), size = 10) + 
   geom_line(linewidth = 1.3) + 
   theme_classic() + 
@@ -102,13 +103,13 @@ ggplot(full_data2[full_data2$Site == 'CW',], aes(x = Date, y = mean, col = Domai
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
-kruskal.test(Abundance~Date2, data = long_qpcr_clean[long_qpcr_clean$Domain == 'AOB' & long_qpcr_clean$Site == 'CW',])
-kruskal_effsize(Abundance~Date2, data = long_qpcr_clean[long_qpcr_clean$Domain == 'AOB' & long_qpcr_clean$Site == 'CW',])
-dunn_test(Abundance~Date2, data = long_qpcr_clean[long_qpcr_clean$Domain == 'AOB' & long_qpcr_clean$Site == 'CW',], p.adjust.method = 'bonferroni')
+kruskal.test(Abundance~Dat2, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CW',])
+kruskal_effsize(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CW',])
+dunn_test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CW',], p.adjust.method = 'bonferroni')
 
 ## CD
 
-ggplot(full_data2[full_data2$Site == 'CD',], aes(x = Date, y = mean, col = Domain, group = Domain)) +
+ggplot(qpcr.summary[qpcr.summary$Site == 'CD',], aes(x = Date, y = mean, col = Domain, group = Domain)) +
   geom_point(aes(shape = Domain), size = 10) + 
   geom_line(linewidth = 1.3) + 
   theme_classic() + 
@@ -127,6 +128,6 @@ ggplot(full_data2[full_data2$Site == 'CD',], aes(x = Date, y = mean, col = Domai
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
 
-kruskal.test(Abundance~Date2, data = long_qpcr_clean[long_qpcr_clean$Domain == 'AOB' & long_qpcr_clean$Site == 'CD',])
-kruskal_effsize(Abundance~Date2, data = long_qpcr_clean[long_qpcr_clean$Domain == 'AOB' & long_qpcr_clean$Site == 'CD',])
-dunn_test(Abundance~Date2, data = long_qpcr_clean[long_qpcr_clean$Domain == 'AOB' & long_qpcr_clean$Site == 'CD',], p.adjust.method = 'bonferroni')
+kruskal.test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CD',])
+kruskal_effsize(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CD',])
+dunn_test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CD',], p.adjust.method = 'bonferroni')
