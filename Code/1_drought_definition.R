@@ -18,6 +18,7 @@ library(tidyverse)
 library(cluster)
 library(stringr)
 library(lubridate)
+library(rstatix)
 
 ################################################################################
 # Data upload                                                                  #
@@ -25,21 +26,21 @@ library(lubridate)
 
 # daily water table measurements from 06.11.2017 to 18.02.2019
 
-water_table_summary <- read_csv("Data/water_table_summary.csv")
+water_table_summary <- read_csv("../wetscapes_amoa/Data/water_table_summary.csv")
 
 water_table_summary$Year <- as.numeric(water_table_summary$Year)
 
 # sample data
 
-sample_data <- read.csv('Data/prok.sample.csv') %>% select(-X)
+sample_data <- read.csv('../wetscapes_amoa/Data/prok.sample.csv') %>% select(-X)
 
 # precipitation
 
-greifswald_precip <- read_delim("Data/precipitation.data.txt", 
+greifswald_precip <- read_delim("../wetscapes_amoa/Data/precipitation.data.txt", 
                                 delim = ";", escape_double = FALSE, trim_ws = TRUE)
 # temperature
 
-greifswald_temp <- read_delim("Data/temperature.data.txt", delim = ";", escape_double = FALSE, trim_ws = TRUE)
+greifswald_temp <- read_delim("../wetscapes_amoa/Data/temperature.data.txt", delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 ################################################################################
 # Functions                                                                    #
@@ -160,8 +161,6 @@ ggplot(water_table_summary[water_table_summary$Site == 'PW',]) + geom_histogram(
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
 
-
-
 ### identify the 'best' cluster from this figure and enter it in the wt.cluster.full function
 ### 'best' - balance between minimal cluster silhouette and minimal number of clusters for interpretation
 
@@ -198,7 +197,6 @@ ggplot(water_table_summary[water_table_summary$Site == 'PD',]) + geom_histogram(
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
-  
 
 pd_wt <- pd_wt %>% add_column(Drought_Status = NA)
 
@@ -264,8 +262,6 @@ ggplot(water_table_summary[water_table_summary$Site == 'CW',]) + geom_histogram(
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
-
-
 
 ### before entering these variables, make sure that the cluster with the higher average water table in the plot corresponds to 'non-drought'
 
@@ -347,18 +343,21 @@ full_drought_wt$Date <- as.Date(full_drought_wt$Date)
 
 library(RColorBrewer)
 
-ggplot(water_table_summary) + 
-  geom_line(aes(x = Date, y = GW_level, col = Site)) +
+water_table_summary$Date <- ymd(water_table_summary$Date)
+drought2018 <- interval(start = "2018-03-15", end = "2019-02-28")
+water_table_drought2018 <- water_table_summary[which(water_table_summary$Date %within% drought2018),]
+
+ggplot(water_table_drought2018[water_table_drought2018$Site == 'CW' | water_table_drought2018$Site == 'PW', ]) + 
+  geom_line(aes(x = Date, y = GW_level, col = Site), size = 1.3) +
   theme_classic() +
   ylab('Depth below surface (cm)') +
   xlab('') +
-  geom_hline(yintercept = -5.45, col = "#E6AB02", linetype = 'dashed', size = 1) +
-  geom_hline(yintercept = -31.05, col = "#7570B3", linetype = 'dashed', size = 1) +
-  geom_hline(yintercept = -30.24, col = "#D95F02", linetype = 'dashed', size = 1) +
-  geom_hline(yintercept = -45.88, col = "#1B9E77", linetype = 'dashed', size = 1) +
-  scale_y_continuous(breaks = seq(-100,50,25)) + 
-  scale_color_manual(values = c("#1B9E77", "#D95F02", "#7570B3", "#E6AB02")) + 
-  scale_x_date(breaks = seq(as.Date('2017-12-01'), as.Date('2020-02-21'), by = "6 months"), date_labels = '%y-%b') +
+  geom_hline(yintercept = -5.45, col = "#117A65", linetype = 'dashed', size = 1) +
+  geom_hline(yintercept = -30.24, col = "#A04000", linetype = 'dashed', size = 1) +
+  geom_hline(yintercept = 0, col = "black", linetype = 'solid', size = 1, alpha = 0.3) +
+  #scale_y_continuous(limits = c(-30, 15)) + 
+  scale_color_manual(values = c("#A04000", "#117A65")) + 
+  scale_x_date(breaks = seq(as.Date('2017-12-01'), as.Date('2020-02-21'), by = "2 months"), date_labels = '%Y-%m') +
   theme(axis.title=element_text(size=24,face = "bold"),
         axis.text=element_text(size=20,face = "bold"),
         title = element_text(size = 20, face = 'bold'),
@@ -367,7 +366,7 @@ ggplot(water_table_summary) +
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank()) + 
   guides(color = guide_legend(list(linetype = c(1, 1, 1, 1) ) ) )
-  
+
 # Relationship between groundwater depth and drought status
 
 wilcox.test(GW_level ~ Drought_Status, data = pw_wt)
@@ -384,20 +383,46 @@ ggplot(full_drought_wt) +
   annotate('text', x=c(1, 2, 2.9, 3.9), y=c(5,48,10,20), label='***') +
   labs(color = NULL)
 
-# Topsoil water content and groundwater depth
+# Topsoil water content
 
 ### separate topsoil data
 
-sample_topsoil <- sample_data %>% filter(depth == '05-10 cm')
+sample_topsoil <- sample_data %>% filter(depth == '05-10 cm',
+                                         loc == 'PW' | loc == 'CW',
+                                         year == '18' | season2 == '19-Feb',
+                                         season2 != '18-Feb') %>% select(water, loc, season2)
 
-ggplot(sample_topsoil, aes(x=Mean_GW, y = water, col = loc, group=loc)) +
-  geom_point() +
-  geom_smooth(se=FALSE) +
+sample_topsoil$season2 <- factor(sample_topsoil$season2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'), labels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
+
+sample_topsoil_sum <- sample_topsoil %>% group_by(loc, season2) %>% summarise(mean = mean(water), sd = sd(water), n = n(), se = sd/sqrt(n))
+
+ggplot(sample_topsoil_sum, aes(x=season2, y = mean, col = loc, group=loc)) +
+  geom_point(aes(shape = loc), size = 10) + 
+  scale_y_continuous(limits = c(30,100)) +
+  geom_line(size = 1.3) + 
   theme_classic() +
   ylab('Relative water weight (%)') +
-  xlab('Water table depth from surface (cm)') +
-  labs(color = 'Site') +
-  ggtitle('Relationship between water table depth and topsoil water content')
+  xlab('') + 
+  scale_shape_manual(values = c(15,16)) +
+  geom_errorbar(aes(ymax = mean + se, ymin = mean), width = 0.1, size = 1) +
+  scale_color_manual(values = c("#A04000", "#117A65")) + 
+  theme(axis.title=element_text(size=24,face = "bold"),
+        axis.text=element_text(size=20,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, linewidth=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank())
+
+levene_test(formula = water~season2, data = sample_topsoil[sample_topsoil$loc == 'PW',])
+shapiro_test(sample_topsoil[sample_topsoil$loc == 'PW',]$water)
+summary(aov(water~season2, sample_topsoil[sample_topsoil$loc == 'PW',]))
+mean(sample_topsoil[sample_topsoil$loc == 'PW',]$water)
+
+levene_test(formula = water~season2, data = sample_topsoil[sample_topsoil$loc == 'CW',])
+shapiro_test(sample_topsoil[sample_topsoil$loc == 'CW',]$water)
+kruskal_test(formula = water~season2, data = sample_topsoil[sample_topsoil$loc == 'CW',])
+dunn_test(formula = water~season2, data = sample_topsoil[sample_topsoil$loc == 'CW',])
 
 # Topsoil water content and drought
 

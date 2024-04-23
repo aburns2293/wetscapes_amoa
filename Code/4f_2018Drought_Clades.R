@@ -1,97 +1,112 @@
+################################################################################
+#                                                                              #
+# Assigning AOA Clades Based on amoA Database                                  #
+#                                                                              #
+# Author: Anna Burns                                                           #
+# Last edited: 19.04.2024                                                      #
+#                                                                              #
+################################################################################
 
+################################################################################
+# Required packages                                                            #
+################################################################################
 
+library(dplyr)
+library(rstatix)
+library(ggplot2)
+library(phyloseq)
+
+################################################################################
+# Data upload                                                                  #
+################################################################################
 
 rel.ab <- read.csv('Data/prok.asv.csv')
 
-aoa.clades <- read.csv('Data/16SrRNA.aoa.clades.csv')
+sample <- read.csv('../wetscapes_amoa/Data/prok.sample.csv')
 
-sample <- read.csv('Data/prok.sample.csv')
+tax <- read.csv('../wetscapes_amoa/Data/prok.tax.csv', row.names = 1)
 
-tax <- read.csv('Data/prok.tax.csv', row.names = 1)
+aoa.clades <- read.csv('../wetscapes_amoa/Data/16SrRNA.aoa.clades.csv')
 
-rel.ab <- rel.ab %>% remove_rownames() %>% column_to_rownames(var = 'X')
+aoa.abs <- read_csv("PROK Analysis/qPCR_mRNA/absolute.abundances.csv")
 
-sample <- sample %>% select(-X) %>% remove_rownames() %>% column_to_rownames(var = 'Sample')
+################################################################################
+# Code                                                                         #
+################################################################################
 
-asv.m <- data.matrix(rel.ab)
+# this code is for reproducibility purposes; the data is already saved under:
+# ./wetscapes_amoa/Data/16srRNA.aoa.clades.csv
 
-tax.m <- as.matrix(tax)
+## create tidy dataframe of absolute abundance data (16S rRNA)
 
-OTU <- otu_table(asv.m, taxa_are_rows = TRUE)
+# abs.ab <- absolute_abundances %>% remove_rownames() %>% column_to_rownames(var = '...1')
+# 
+# sample <- sample %>% select(-X) %>% remove_rownames() %>% column_to_rownames(var = 'Sample')
+# 
+# asv.m <- t(data.matrix(abs.ab))
+# 
+# tax.m <- as.matrix(tax)
+# 
+# OTU <- otu_table(asv.m, taxa_are_rows = TRUE)
+# 
+# TAX <- tax_table(tax.m)
+# 
+# INFO <- sample_data(sample)
+# 
+# ps <- phyloseq(OTU, TAX, INFO)
+# 
+# ps.melt <- psmelt(ps)
+# 
+# ## filter tidy dataframe by AOA ASVs
+# 
+# aoa.clades <- aoa.clades %>% select(X, Assigned_Clade_Tree2)
+# aoa.asvs <- as.vector(aoa.clades$X)
+# 
+# rel.ab.aoa <- ps.melt[ps.melt$OTU %in% aoa.asvs,]
+# 
+# aoa.full <- dplyr::left_join(rel.ab.aoa, aoa.clades, by = join_by('OTU' == 'X'))
 
-TAX <- tax_table(tax.m)
+# write.csv(aoa.full, '../wetscapes_amoa/Data/16srRNA.aoa.absolute.csv')
 
-INFO <- sample_data(sample)
+# clean absolute data results for 2018 drought cycle
 
-ps <- phyloseq(OTU, TAX, INFO)
+aoa.abs.2018 <- aoa.abs %>% filter(depth == '05-10 cm',
+                                   year == '18' | season2 == '19-Feb',
+                                   season2 != '18-Feb',
+                                   loc == 'PW' | loc == 'CW') 
 
-ps.relab <- ps %>% transform_sample_counts(function(x) {x/sum(x)}) 
+aoa.abs.2018$season2 <- factor(aoa.abs.2018$season2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
 
-ps.melt <- psmelt(ps.relab)
+################################################################################
+# Figures and Statistics                                                       #
+################################################################################
 
+aoa.summary <- aoa.abs.2018 %>% group_by(loc, season2, OTU) %>% mutate(mean = mean(Abundance), sd = sd(Abundance), n = n(), se = sd/sqrt(n))
 
+aoa.present <- aoa.present %>% filter(mean != 0)
 
+aoa.calc <- aoa.present %>% group_by(loc, season2, Assigned_Clade_Tree2) %>% summarize(mean = mean(Abundance), sd = sd(Abundance), n = n(), se = sd/sqrt(n))
 
-
-aoa.clades <- aoa.clades %>% select(X, Assigned_Clade_Tree2)
-aoa.asvs <- as.vector(aoa.clades$X)
-
-rel.ab.aoa <- ps.melt[ps.melt$OTU %in% aoa.asvs,]
-
-
-aoa.full <- dplyr::left_join(rel.ab.aoa, aoa.clades, by = join_by('OTU' == 'X'))
-
-
-
-
-
-
-
-
-aoa.rel.ab <- read.csv('Data/16SrRNA.aoa.relative.csv')
-
-aoa.rel.shallow <- aoa.rel.ab %>% filter(depth == '05-10 cm') 
-
-aoa.rel.drought.shallow <- aoa.rel.shallow %>% filter(year == '18' | season2 == '19-Feb')
-
-aoa.rel.drought.shallow <- aoa.rel.drought.shallow %>% filter(season2 != '18-Feb')
-
-aoa.rel.drought.shallow$season2 <- factor(aoa.rel.drought.shallow$season2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
-
-aoa.present <- aoa.rel.drought.shallow %>% group_by(loc, season2, Assigned_Clade_Tree2) %>% mutate(groupsum = sum(Abundance))
-
-aoa.present <- aoa.present %>% filter(groupsum != 0)
-
-ggplot(aoa.summary, aes(x = season2, y = Assigned_Clade_Tree2)) +
+ggplot(aoa.calc, aes(x = season2, y = Assigned_Clade_Tree2, shape = loc)) +
   geom_point(aes(size = mean)) + 
-  #geom_point(aes(size = (mean + se)), shape = 1) + 
-  facet_wrap(~loc) + 
+  scale_shape_manual(values = c(1, 16)) + 
+  scale_size_continuous(range = c(5,15), breaks = c(1e6, 5e6, 1e7)) + 
   xlab('') +
   ylab('') + 
   theme_classic() + 
-  theme(axis.text = element_text(size = 13, face = 'bold'),
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
         title = element_text(size = 20, face = 'bold'),
-        legend.text = element_text(size = 13),
-        legend.title = element_blank(),
-        panel.border = element_rect(linetype = 'solid', color = 'black', fill = NA, size = 2),
-        strip.text = element_text(size = 13, face = 'bold'),
-        strip.background = element_rect(linewidth = 2))
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(), 
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank())
 
+aoa.calc2 <- aoa.present %>% select(Assigned_Clade_Tree2, loc, season2, Abundance)
 
-aoa.summary <- aoa.present %>% group_by(loc, season2, Assigned_Clade_Tree2) %>% summarise(mean = mean(Abundance), n = n(), sd = sd(Abundance), se = sd/sqrt(n))
+rstatix::levene_test(aoa.calc2[aoa.calc2$OTU == 'Dada1987',], Abundance~season2)
 
-ggplot(aoa.summary, aes(x = season2,y = mean, col = Assigned_Clade_Tree2, group = Assigned_Clade_Tree2)) +
-  geom_point() + 
-  geom_line() + 
-  facet_wrap(~loc) + 
-  xlab('') +
-  ylab('') + 
-  theme_classic() + 
-  geom_errorbar(aes(ymax = mean + se, ymin = mean), width = 0.1) + 
-  theme(axis.text = element_text(size = 13, face = 'bold'),
-        title = element_text(size = 20, face = 'bold'),
-        legend.text = element_text(size = 13),
-        legend.title = element_blank(),
-        panel.border = element_rect(linetype = 'solid', color = 'black', fill = NA, size = 2),
-        strip.text = element_text(size = 13, face = 'bold'),
-        strip.background = element_rect(linewidth = 2))
+aoa.rel.drought.shallow[aoa.rel.drought.shallow$loc == 'PW' & aoa.rel.drought.shallow$Assigned_Clade_Tree2 == 'UD',] %>% shapiro_test(Abundance)
+aoa.rel.drought.shallow[aoa.rel.drought.shallow$loc == 'PW' & aoa.rel.drought.shallow$Assigned_Clade_Tree2 == 'UD',] %>% levene_test(Abundance ~ season2)
+
+aoa.rel.drought.shallow[aoa.rel.drought.shallow$loc == 'PW' & aoa.rel.drought.shallow$Assigned_Clade_Tree2 == 'NP-Eta',] %>% kruskal_test(Abundance ~ season2)
+

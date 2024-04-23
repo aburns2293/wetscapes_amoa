@@ -53,7 +53,6 @@ aob_summary$month2 <- str_c(str_sub(aob_summary$month, 1, 2), str_sub(aob_summar
 
 aob_summary$month2 <- factor(aob_summary$month2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
 
-
 ################################################################################
 # Figures and Statistics                                                       #
 ################################################################################
