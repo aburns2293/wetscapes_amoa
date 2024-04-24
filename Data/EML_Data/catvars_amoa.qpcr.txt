@@ -1,0 +1,7 @@
+attributeName	code	definition
+Domain	AOA	ammonia oxidizing archaea
+Domain	AOB	ammonia oxidizing bacteria
+Site	CD	drained coastal fen
+Site	CW	rewetted coastal fen
+Site	PD	drained percolation fen
+Site	PW	rewetted percolation fen

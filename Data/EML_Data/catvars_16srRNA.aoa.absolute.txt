@@ -1,0 +1,53 @@
+attributeName	code	definition
+Assigned_Clade_Tree2	NP-Eta	nitrosopumilales clade eta
+Assigned_Clade_Tree2	NP-Gamma	nitrosopumilales clade gamma
+Assigned_Clade_Tree2	NS-Delta	nitrososphaerales clade delta
+Assigned_Clade_Tree2	NS-Gamma	nitrososphaerales clade gamma
+Assigned_Clade_Tree2	NS-UD	nitrososphaerales clade undetermined
+Assigned_Clade_Tree2	NS-Zeta	nitrosophaerales clade zeta
+Assigned_Clade_Tree2	NT-Alpha	nitrosotaleales clade alpha
+Assigned_Clade_Tree2	UD	clade undetermined
+Class	Nitrososphaeria	Nitrososphaeria
+Domain	Archaea	Archaea
+Drought_Status	Drought	sample collected under drought conditions (defined by clustering algorithm)
+Drought_Status	Non-drought	sample collected under non-drought conditions (defined by clustering algorithm)
+Family	Ca. Nitrosotalea family incertae sedis	Ca. Nitrosotalea family incertae sedis
+Family	EU309863	EU309863
+Family	Nitrosoarchaeum family incertae sedis	Nitrosoarchaeum family incertae sedis
+Genus	Ca. Nitrosoarchaeum	Ca. Nitrosoarchaeum
+Genus	Ca. Nitrosotalea	Ca. Nitrosotalea
+Group	TACK	TACK
+Kingdom	Archaea (superkingdom)	Archaea (superkingdom)
+Nutrient_Date	April	nutrient samples extracted in April 2023
+Nutrient_Date	March	nutrient samples extracted in March 2023
+Nutrient_Date	Original	nutrient samples extracted prior to 2020
+Order	Ca. Nitrosopumilales	Ca. Nitrosopumilales
+Order	Ca. Nitrosotaleales	Ca. Nitrosotaleales
+Order	Nitrososphaerales	Nitrososphaerales
+Phylum	Thaumarchaeota	Thaumarchaeota
+Species	KT453561	KT453561
+depth	05-10 cm	soil samples collected at depth of 5-10 cm below surface
+loc	CD	drained coastal fen
+loc	CW	rewetted coastal fen
+loc	PD	drained percolation fen
+loc	PW	rewetted percolation fen
+season	April	April
+season	August	August
+season	December	December
+season	February	February
+season	June	June
+season	October	October
+season2	18-Apr	samples collected in April 2018
+season2	18-Aug	samples collected in August 2018
+season2	18-Dec	samples collected in December 2018
+season2	18-Jun	samples collected in June 2018
+season2	18-Oct	samples collected in October 2018
+season2	19-Feb	samples collected in February 2019
+season3	Autumn	samples collected between months of September and November
+season3	Spring	samples collected between months of March and May
+season3	Summer	samples collected between months of June and August
+season3	Winter	samples collected between months of December and February
+site	C	coastal fen
+site	P	percolation fen
+state	D	drained fen
+state	W	rewetted fen

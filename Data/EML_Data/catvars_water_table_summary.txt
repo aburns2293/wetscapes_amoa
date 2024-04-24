@@ -1,0 +1,5 @@
+attributeName	code	definition
+Site	CD	drained coastal fen
+Site	CW	rewetted coastal fen
+Site	PD	drained percolation fen
+Site	PW	rewetted percolation fen

@@ -1,0 +1,40 @@
+attributeName	code	definition
+Drought_Status	Drought	Sample collected under drought conditions (as defined by clustering algorithm)
+Drought_Status	Non-drought	Sample collected under non-drought conditions (as defined by clustering algorithm)
+Nutrient_Date	April	Nutrients extracted in April 2023
+Nutrient_Date	March	Nutrients extracted in March 2023
+Nutrient_Date	Original	Nutrients extracted before 2020
+depth	05-10 cm	Soil samples taken at 5-10 cm depth below surface
+depth	15-20 cm	Soil samples taken at 15-20 cm depth below surface
+depth	25-30 cm	Soil samples taken at 25-30 cm depth below surface
+loc	CD	drained coastal fen
+loc	CW	rewetted coastal fen
+loc	PD	drained percolation fen
+loc	PW	rewetted percolation fen
+season	April	samples collected in April
+season	August	samples collected in August
+season	December	samples collected in December
+season	February	samples collected in February
+season	June	samples collected in June
+season	November	samples collected in November
+season	October	samples collected in October
+season2	17-Apr	samples collected April 2017
+season2	17-Aug	samples collected August 2017
+season2	17-Nov	samples collected November 2017
+season2	18-Apr	samples collected April 2018
+season2	18-Aug	samples collected August 2018
+season2	18-Dec	samples collected December 2018
+season2	18-Feb	samples collected February 2018
+season2	18-Jun	samples collected June 2018
+season2	18-Oct	samples collected October 2018
+season2	19-Feb	samples collected February 2019
+season2	19-Jun	samples collected June 2019
+season2	19-Oct	samples collected October 2019
+season3	Autumn	sampling month between september and november
+season3	Spring	sampling month between march and may
+season3	Summer	sampling month between june and august
+season3	Winter	sampling month between december and february
+site	C	coastal fen
+site	P	percolation fen
+state	D	drained fen
+state	W	rewetted fen

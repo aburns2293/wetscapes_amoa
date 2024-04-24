@@ -1,0 +1,7 @@
+attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
+STATIONS_ID	station Id	character				
+MESS_DATUM	measurement date	Date		YYYYMMDD		
+QN_4	internal value from Wetterdienst	character				
+TT_TER	terrestrial temperature	numeric	celsius			
+RF_TER	relative humidity terrestrial	numeric	dimensionless			
+eor	internal Wetterdienst error code	character				

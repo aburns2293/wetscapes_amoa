@@ -1,0 +1,3 @@
+attributeName	code	definition
+Site	CW	rewetted coastal fen
+Site	PW	rewetted percolation fen

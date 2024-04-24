@@ -1,0 +1,48 @@
+attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
+OTU	observed taxonomic unit	character			NA	Soil property not tested for this sampling date
+Sample	sample name	character			NA	Soil property not tested for this sampling date
+Abundance	absolute abundance	numeric	copiesDW		NA	Soil property not tested for this sampling date
+group	sampling group	character			NA	Soil property not tested for this sampling date
+loc	location	categorical			NA	Soil property not tested for this sampling date
+site	site	categorical			NA	Soil property not tested for this sampling date
+year	year	Date		YY	NA	Soil property not tested for this sampling date
+season	sampling month	categorical			NA	Soil property not tested for this sampling date
+season2	sampling date	categorical			NA	Soil property not tested for this sampling date
+state	drained or rewetted	categorical			NA	Soil property not tested for this sampling date
+depth	sampling depth below surface	categorical			NA	Soil property not tested for this sampling date
+water	% water content	numeric	dimensionless		NA	Soil property not tested for this sampling date
+TOM	total organic matter	numeric	mgL		NA	Soil property not tested for this sampling date
+Bio	biopolymers	numeric	mgL		NA	Soil property not tested for this sampling date
+hCOM	humic substances	numeric	mgL		NA	Soil property not tested for this sampling date
+lCOM	labile substances	numeric	mgL		NA	Soil property not tested for this sampling date
+NO3	nitrate	numeric	mgL		NA	Soil property not tested for this sampling date
+NO2	nitrite	numeric	mgL		NA	Soil property not tested for this sampling date
+NH4	ammonium	numeric	mgL		NA	Soil property not tested for this sampling date
+P	phosphorous	numeric	mgL		NA	Soil property not tested for this sampling date
+pH	soil column pH	numeric	dimensionless		NA	Soil property not tested for this sampling date
+Salinity	soil column salinity	numeric	mgL		NA	Soil property not tested for this sampling date
+mcrA_DW	mcrA gene copies	numeric	copiesDW		NA	Soil property not tested for this sampling date
+mean_temp	average temperature	numeric	celsius		NA	Soil property not tested for this sampling date
+sd_temp	temperature standard deviation	numeric	celsius		NA	Soil property not tested for this sampling date
+mean_hum	mean air water content	numeric	dimensionless		NA	Soil property not tested for this sampling date
+sd_hum	standard deviation air water content	numeric	dimensionless		NA	Soil property not tested for this sampling date
+mean_precip	average precipitation	numeric	millimeter		NA	Soil property not tested for this sampling date
+sd_precip	standard deviation precipitation	numeric	millimeter		NA	Soil property not tested for this sampling date
+Drought_Status	drought or non-drought based on clustering algorithm	categorical			NA	Soil property not tested for this sampling date
+Drought_Prop	proportion of days in month under drought water table threshhold	numeric	dimensionless		NA	Soil property not tested for this sampling date
+season3	season of year	categorical			NA	Soil property not tested for this sampling date
+Month	month	Date		M	NA	Soil property not tested for this sampling date
+Mean_GW	mean groundwater depth below surface	numeric	centimeter		NA	Soil property not tested for this sampling date
+SD_GW	standard deviation groundwater depth below surface	numeric	centimeter		NA	Soil property not tested for this sampling date
+aerobic_ammonia_oxidation	AAO defined by faprotax	numeric	copiesDW		NA	Soil property not tested for this sampling date
+Nutrient_Date	date of nutrient sampling	categorical			NA	Soil property not tested for this sampling date
+Domain	domain  	categorical			NA	Soil property not tested for this sampling date
+Kingdom	kingdom	categorical			NA	Soil property not tested for this sampling date
+Group	group	categorical			NA	Soil property not tested for this sampling date
+Phylum	phylum	categorical			NA	Soil property not tested for this sampling date
+Class	class	categorical			NA	Soil property not tested for this sampling date
+Order	order	categorical			NA	Soil property not tested for this sampling date
+Family	family	categorical			NA	Soil property not tested for this sampling date
+Genus	genus	categorical			NA	Soil property not tested for this sampling date
+Species	species	categorical			NA	Soil property not tested for this sampling date
+Assigned_Clade_Tree2	clade assigned based on phylogenetic tree	categorical			NA	Soil property not tested for this sampling date

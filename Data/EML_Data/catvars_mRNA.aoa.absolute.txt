@@ -1,0 +1,11 @@
+attributeName	code	definition
+Site	CW	rewetted coastal fen
+Site	PW	rewetted percolation fen
+Subunit	amo-A	A subunit of amo gene
+Subunit	amo-B	B subunit of amo gene
+Subunit	amo-C	C subunit of amo gene
+month	18-Apr	samples collected April 2018
+month	18-Aug	samples collected August 2018
+month	18-Jun	samples collected June 2018
+month	18-Oct	samples collected October 2018
+month	19-Feb	samples collection February 2019

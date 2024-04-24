@@ -1,0 +1,7 @@
+attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
+ID	sample ID	character				
+L1	database	categorical				
+L2	function	categorical				
+L3	sub-function	categorical				
+L4	group	categorical				
+L5	label	character				

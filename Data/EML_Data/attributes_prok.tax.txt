@@ -1,0 +1,11 @@
+attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
+ID	sample ID	character			NA	Soil property not tested for this sampling date
+Domain	Domain	character			NA	Soil property not tested for this sampling date
+Kingdom	Kingdom	character			NA	Soil property not tested for this sampling date
+Group	Group	character			NA	Soil property not tested for this sampling date
+Phylum	Phylum	character			NA	Soil property not tested for this sampling date
+Class	Class	character			NA	Soil property not tested for this sampling date
+Order	Order	character			NA	Soil property not tested for this sampling date
+Family	Family	character			NA	Soil property not tested for this sampling date
+Genus	Genus	character			NA	Soil property not tested for this sampling date
+Species	Species	character			NA	Soil property not tested for this sampling date
