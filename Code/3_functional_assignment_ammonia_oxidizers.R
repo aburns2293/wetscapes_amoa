@@ -5,6 +5,7 @@
 #                                                                              #
 # Author: Anna Burns                                                           #
 # Last edited: 28.07.2023                                                      #
+# Last tested: 25.04.2024                                                      #
 #                                                                              #
 ################################################################################
 
@@ -16,18 +17,19 @@ library(tidyverse)
 library(dplyr)
 library(ggplot2)
 library(phyloseq)
+library(tibble)
 
 ################################################################################
 # Data upload                                                                  #
 ################################################################################
 
-absolute.abundance <- read.csv('Data/prok.sample.csv') %>% remove_rownames() %>% column_to_rownames(var = 'X')
+absolute.abundance <- read.csv('Data/prok.absolute.abundances.asv.csv') %>% remove_rownames() %>% column_to_rownames(var = 'Sample')
 
 tax <- read.csv('Data/prok.tax.csv')
 
-sample <- read.csv('Data/prok.sample.csv') %>% select(-X) %>% remove_rownames() %>% column_to_rownames(var = 'Sample')
+sample <- read.csv('Data/prok.sample.csv') %>% remove_rownames() %>% column_to_rownames(var = 'Sample')
 
-potential.comammox <- read.csv('Data/nob.comammox.hits.csv') %>% select(-X)
+potential.comammox <- read.csv('Data/nob.comammox.hits.csv')
   # includes nitrate oxidizing bacteria that had a BLAST ID in the first 100 hits
   # with known ammonia oxidizing bacteria
 
@@ -61,9 +63,9 @@ comammox.absolute <- t(comammox.absolute)
 
 comammox.vec <- as.vector(row.names(comammox.absolute))
 
-tax.comammox <- tax[tax$X %in% comammox.vec,]
+tax.comammox <- tax[tax$ID %in% comammox.vec,]
 
-tax.comammox <- tax.comammox %>% remove_rownames() %>% column_to_rownames(var = 'X')
+tax.comammox <- tax.comammox %>% remove_rownames() %>% column_to_rownames(var = 'ID')
 
 sample.names.comammox <- as.vector(colnames(comammox.absolute))
 
@@ -87,14 +89,14 @@ comammox.ps.melt <- psmelt(comammox.ps)
 
 ## analysis of seasonal trends in potential comammox nobs
 
-comammox.ps.present <- comammox_absolute %>% filter(Abundance != 0)
+comammox.ps.present <- comammox.ps.melt %>% filter(Abundance != 0)
 
 comammox.ps.present$season2 <- factor(comammox.ps.present$season2, levels = c('17-Apr', '17-Aug', '17-Nov',
                                               '18-Feb', '18-Apr', '18-Jun', 
                                               '18-Aug', '18-Oct', '18-Dec',
                                               '19-Feb', '19-Jun', '19-Oct'))
 
-comammox.summary <- comammox_absolute %>% group_by(loc, season2, OTU) %>% summarise(mean = mean(Abundance), sd = sd(Abundance), n = n(), se = sd/sqrt(n))
+comammox.summary <- comammox.ps.melt %>% group_by(loc, season2, OTU) %>% summarise(mean = mean(Abundance), sd = sd(Abundance), n = n(), se = sd/sqrt(n))
 
 # PW
 
@@ -113,7 +115,7 @@ ggplot(comammox.summary[comammox.summary$loc == 'PW',], aes(x = season2, y = mea
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
 
-kruskal.test(Abundance~season2, data = comammox_absolute[comammox_absolute$loc == 'PW',])
+kruskal.test(Abundance~season2, data = comammox.ps.melt[comammox.ps.melt$loc == 'PW',])
 
 # PD
 ggplot(comammox.summary[comammox.summary$loc == 'PD',], aes(x = season2, y = mean, col = OTU)) +
@@ -131,7 +133,7 @@ ggplot(comammox.summary[comammox.summary$loc == 'PD',], aes(x = season2, y = mea
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
 
-kruskal.test(Abundance~season2, data = comammox_absolute[comammox_absolute$loc == 'PD',])
+kruskal.test(Abundance~season2, data = comammox.ps.melt[comammox.ps.melt$loc == 'PD',])
 
 # CW
 ggplot(comammox.summary[comammox.summary$loc == 'CW',], aes(x = season2, y = mean, col = OTU)) +

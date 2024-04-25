@@ -4,6 +4,7 @@
 #                                                                              #
 # Author: Anna Burns                                                           #
 # Last edited: 19.04.2024                                                      #
+# Last tested: 25.04.2024                                                      #
 #                                                                              #
 ################################################################################
 
@@ -22,13 +23,13 @@ library(phyloseq)
 
 rel.ab <- read.csv('Data/prok.asv.csv')
 
-sample <- read.csv('../wetscapes_amoa/Data/prok.sample.csv')
+sample <- read.csv('Data/prok.sample.csv')
 
-tax <- read.csv('../wetscapes_amoa/Data/prok.tax.csv', row.names = 1)
+tax <- read.csv('Data/prok.tax.csv', row.names = 1)
 
-aoa.clades <- read.csv('../wetscapes_amoa/Data/16SrRNA.aoa.clades.csv')
+aoa.clades <- read.csv('Data/16SrRNA.aoa.clades.csv')
 
-aoa.abs <- read_csv("PROK Analysis/qPCR_mRNA/absolute.abundances.csv")
+aoa.abs <- read.csv("Data/16srRNA.aoa.absolute.csv")
 
 ################################################################################
 # Code                                                                         #
@@ -39,6 +40,8 @@ aoa.abs <- read_csv("PROK Analysis/qPCR_mRNA/absolute.abundances.csv")
 
 ## create tidy dataframe of absolute abundance data (16S rRNA)
 
+# absolute_abundances <- read.csv('Data/prok.absolute.abundances.asv.csv')
+#
 # abs.ab <- absolute_abundances %>% remove_rownames() %>% column_to_rownames(var = '...1')
 # 
 # sample <- sample %>% select(-X) %>% remove_rownames() %>% column_to_rownames(var = 'Sample')
@@ -83,11 +86,11 @@ aoa.abs.2018$season2 <- factor(aoa.abs.2018$season2, levels = c('18-Apr', '18-Ju
 
 aoa.summary <- aoa.abs.2018 %>% group_by(loc, season2, OTU) %>% mutate(mean = mean(Abundance), sd = sd(Abundance), n = n(), se = sd/sqrt(n))
 
-aoa.present <- aoa.present %>% filter(mean != 0)
+aoa.present <- aoa.abs.2018 %>% filter(Abundance != 0)
 
 aoa.calc <- aoa.present %>% group_by(loc, season2, Assigned_Clade_Tree2) %>% summarize(mean = mean(Abundance), sd = sd(Abundance), n = n(), se = sd/sqrt(n))
 
-ggplot(aoa.calc, aes(x = season2, y = Assigned_Clade_Tree2, shape = loc)) +
+ggplot(aoa.summary, aes(x = season2, y = Assigned_Clade_Tree2, shape = loc)) +
   geom_point(aes(size = mean)) + 
   scale_shape_manual(values = c(1, 16)) + 
   scale_size_continuous(range = c(5,15), breaks = c(1e6, 5e6, 1e7)) + 
@@ -103,7 +106,7 @@ ggplot(aoa.calc, aes(x = season2, y = Assigned_Clade_Tree2, shape = loc)) +
 
 aoa.calc2 <- aoa.present %>% select(Assigned_Clade_Tree2, loc, season2, Abundance)
 
-rstatix::levene_test(aoa.calc2[aoa.calc2$OTU == 'Dada1987',], Abundance~season2)
+levene_test(aoa.calc2[aoa.calc2$OTU == 'Dada1987',], Abundance~season2)
 
 aoa.rel.drought.shallow[aoa.rel.drought.shallow$loc == 'PW' & aoa.rel.drought.shallow$Assigned_Clade_Tree2 == 'UD',] %>% shapiro_test(Abundance)
 aoa.rel.drought.shallow[aoa.rel.drought.shallow$loc == 'PW' & aoa.rel.drought.shallow$Assigned_Clade_Tree2 == 'UD',] %>% levene_test(Abundance ~ season2)

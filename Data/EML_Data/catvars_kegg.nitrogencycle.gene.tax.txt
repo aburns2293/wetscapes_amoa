@@ -1,6 +1,0 @@
-attributeName	code	definition
-L1	KEGG	database
-L2	Metabolism	gene function
-L3	Energy metabolism	gene sub-function
-L4	ko00680 Methane metabolism	KEGG id for methane metabolism
-L4	ko00910 Nitrogen metabolism	KEGG id for nitrogen metabolism

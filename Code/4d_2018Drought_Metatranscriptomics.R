@@ -4,6 +4,7 @@
 #                                                                              #
 # Author: Anna Burns                                                           #
 # Last edited: 15.01.2024                                                      #
+# Last tested: 25.04.2024                                                      #
 #                                                                              #
 ################################################################################
 
@@ -35,23 +36,15 @@ aob <- read.csv('Data/mRNA.aob.absolute.csv')
 
 # preparing aoa data
 
-aoa$month <- factor(aoa$month, levels = c('18Apr', '18Jun', '18Aug', '18Oct', '18Dec', '19Feb'))
+aoa$month <- factor(aoa$month, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
 
 aoa_summary <- aoa %>% group_by(Site, month, Subunit) %>% summarise(mean = mean(Amount), sd = sd(Amount), n = n(), se = sd/sqrt(n))
 
-aoa_summary$month2 <- str_c(str_sub(aoa_summary$month, 1, 2), str_sub(aoa_summary$month, 3,5), sep = '-')
-
-aoa_summary$month2 <- factor(aoa_summary$month2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
-
 # preparing aob data
 
-aob$month <- factor(aob$month, levels = c('18Apr', '18Jun', '18Aug', '18Oct', '18Dec', '19Feb'))
+aob$month <- factor(aob$month, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
 
 aob_summary <- aob %>% group_by(Site, month, Subunit) %>% summarise(mean = mean(Amount), sd = sd(Amount), n = n(), se = sd/sqrt(n))
-
-aob_summary$month2 <- str_c(str_sub(aob_summary$month, 1, 2), str_sub(aob_summary$month, 3,5), sep = '-')
-
-aob_summary$month2 <- factor(aob_summary$month2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
 
 ################################################################################
 # Figures and Statistics                                                       #
@@ -61,7 +54,7 @@ aob_summary$month2 <- factor(aob_summary$month2, levels = c('18-Apr', '18-Jun', 
 
 ## coastal wet site
 
-ggplot(aoa_summary[aoa_summary$Site == 'CW',], aes(x = month2, y = mean, col = Subunit, group = Subunit)) +
+ggplot(aoa_summary[aoa_summary$Site == 'CW',], aes(x = month, y = mean, col = Subunit, group = Subunit)) +
   geom_point(aes(shape = Subunit), size = 10) + 
   geom_line(linewidth = 1.3) + 
   theme_classic() + 
@@ -82,7 +75,7 @@ ggplot(aoa_summary[aoa_summary$Site == 'CW',], aes(x = month2, y = mean, col = S
 
 ## percolation wet site
 
-ggplot(aoa_summary[aoa_summary$Site == 'PW',], aes(x = month2, y = mean, col = Subunit, group = Subunit)) +
+ggplot(aoa_summary[aoa_summary$Site == 'PW',], aes(x = month, y = mean, col = Subunit, group = Subunit)) +
   geom_point(aes(shape = Subunit), size = 10) + 
   geom_line(size = 1.3) + 
   theme_classic() + 
@@ -104,7 +97,7 @@ ggplot(aoa_summary[aoa_summary$Site == 'PW',], aes(x = month2, y = mean, col = S
 
 # coastal wet site
 
-ggplot(aob_summary[aob_summary$Site == 'CW',], aes(x = month2, y = mean, col = Subunit, group = Subunit)) +
+ggplot(aob_summary[aob_summary$Site == 'CW',], aes(x = month, y = mean, col = Subunit, group = Subunit)) +
   geom_point(aes(shape = Subunit), size = 10) + 
   geom_line(size = 1.3) + 
   theme_classic() + 
@@ -124,7 +117,7 @@ ggplot(aob_summary[aob_summary$Site == 'CW',], aes(x = month2, y = mean, col = S
 
 # percolation wet site
 
-ggplot(aob_summary[aob_summary$Site == 'PW',], aes(x = month2, y = mean, col = Subunit, group = Subunit)) +
+ggplot(aob_summary[aob_summary$Site == 'PW',], aes(x = month, y = mean, col = Subunit, group = Subunit)) +
   geom_point(aes(shape = Subunit), size = 10) + 
   geom_line(size = 1.3) + 
   theme_classic() + 

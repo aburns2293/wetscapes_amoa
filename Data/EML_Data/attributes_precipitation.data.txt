@@ -1,9 +1,0 @@
-attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
-STATIONS_ID	station ID	character			NA	Soil property not tested for this sampling date
-MESS_DATUM	date of measurement	Date		YYYYMMDD	NA	Soil property not tested for this sampling date
-QN_6	internal value	character			NA	Soil property not tested for this sampling date
-RS	precipitation	numeric	millimeter		NA	Soil property not tested for this sampling date
-RSF	humidity	numeric	dimensionless		NA	Soil property not tested for this sampling date
-SH_TAG	snow height	numeric	millimeter		NA	Soil property not tested for this sampling date
-NSH_TAG	rain height	numeric	millimeter		NA	Soil property not tested for this sampling date
-eor	error code	character			NA	Soil property not tested for this sampling date

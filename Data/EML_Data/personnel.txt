@@ -1,4 +1,0 @@
-givenName	middleInitial	surName	organizationName	electronicMailAddress	userId	role	projectTitle	fundingAgency	fundingNumber
-Anna	M	Burns	University Greifswald	anna.burns@stud.uni-greifswald.de		Contact	Divergent responses of soil AOA and AOB to drought in rewetted fen peatlands	"Fulbright, Napier"	NA
-Haitao		Wang	University Greifswald	haitao.wang@uni-greifswald.de		Creator	Wetscapes	ESF	ESF/14-BM-A55-0027/16 to ESF/14-BM-A55-0035/16
-Tim		Urich	University Greifswald	tim.urich@uni-greifswald.de		PI	NA	NA	NA

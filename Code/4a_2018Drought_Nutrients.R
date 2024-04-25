@@ -4,6 +4,7 @@
 #                                                                              #
 # Author: Anna Burns                                                           #
 # Last edited: 28.07.2023                                                      #
+# Last tested: 25.04.2024                                                      #
 #                                                                              #
 ################################################################################
 
@@ -14,14 +15,15 @@
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
+library(tibble)
 
 ################################################################################
 # Data upload                                                                  #
 ################################################################################
 
-sample <- read.csv('Data/prok.sample.csv') %>% remove_rownames() %>% column_to_rownames(var = 'X')
+sample <- read.csv('Data/prok.sample.csv') %>% remove_rownames() %>% column_to_rownames(var = 'Sample')
 
-sample.2018drought <- sample %>% filter(season2 == '18-Feb' | season2 == '18-Apr'| season2 == '18-Jun' | 
+sample.2018drought <- sample %>% dplyr::filter(season2 == '18-Feb' | season2 == '18-Apr'| season2 == '18-Jun' | 
                                           season2 == '18-Aug' | season2 == '18-Oct' | season2 == '18-Dec' | season2 == '19-Feb')
 
 sample.2018drought.topsoil <- sample.2018drought %>% filter(depth == '05-10 cm')

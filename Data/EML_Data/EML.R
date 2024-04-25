@@ -86,6 +86,8 @@ make_eml(path = './Data/EML_Data',
 
 # styling
 
+library(xml2)
+library(xslt)
 eml.aoa <- read_xml('./Data/metadata_formatted.xml')
 style.sheet <- read_xml('./Data/eml_appinfo2documentation.xsl')
 style.sheet2 <- read_xml('./Data/ascii-treeview.xsl')

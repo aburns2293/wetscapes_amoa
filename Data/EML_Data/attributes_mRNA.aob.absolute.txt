@@ -1,6 +1,0 @@
-attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
-month	month	categorical			NA	Soil property not tested for this sampling date
-sample	sample name	character			NA	Soil property not tested for this sampling date
-Site	site	categorical			NA	Soil property not tested for this sampling date
-Subunit	"amo subunit (A, B, C)"	categorical			NA	Soil property not tested for this sampling date
-Amount	absolute quantification of gene copies	numeric	copiesDW		NA	Soil property not tested for this sampling date

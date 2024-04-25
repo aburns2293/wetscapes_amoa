@@ -1,4 +1,0 @@
-attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
-ASV	assigned amplicon sequence variant	character				
-ComHit	most similar known comammox sequence	character				
-PercID	highest percentage identification with known comammox sequence	numeric	dimensionless			

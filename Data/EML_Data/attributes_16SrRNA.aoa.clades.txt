@@ -1,4 +1,0 @@
-attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
-Name	sample name	character			NA	Soil property not tested for this sampling date
-Assigned_Clade_Tree2	assigned clade based on phylogenetic tree	categorical			NA	Soil property not tested for this sampling date
-seq_vals	fasta sequences	character			NA	Soil property not tested for this sampling date

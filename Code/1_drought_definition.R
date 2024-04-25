@@ -5,6 +5,7 @@
 #                                                                              #
 # Author: Anna Burns                                                           #
 # Last edited: 26.07.2023                                                      #
+# Last tested: 25.04.2024                                                      #
 #                                                                              #
 ################################################################################
 
@@ -19,6 +20,7 @@ library(cluster)
 library(stringr)
 library(lubridate)
 library(rstatix)
+library(readr)
 
 ################################################################################
 # Data upload                                                                  #
@@ -26,17 +28,17 @@ library(rstatix)
 
 # daily water table measurements from 06.11.2017 to 18.02.2019
 
-water_table_summary <- read_csv("../wetscapes_amoa/Data/water_table_summary.csv")
+water_table_summary <- read.csv("Data/water_table_summary.csv")
 
 water_table_summary$Year <- as.numeric(water_table_summary$Year)
 
 # sample data
 
-sample_data <- read.csv('../wetscapes_amoa/Data/prok.sample.csv') %>% select(-X)
+sample_data <- read.csv('Data/prok.sample.csv')
 
 # precipitation
 
-greifswald_precip <- read_delim("../wetscapes_amoa/Data/precipitation.data.txt", 
+greifswald_precip <- read_delim("Data/precipitation.data.txt", 
                                 delim = ";", escape_double = FALSE, trim_ws = TRUE)
 # temperature
 
@@ -90,7 +92,7 @@ wt.cluster.full <- function(wt_data, optimal_number, site) {
 
 ## cleaning water table data
 
-water_table_summary$Date <- ymd(water_table_summary$Date)
+water_table_summary$Date <- mdy(water_table_summary$Date)
   
 ## cleaning precipitation data
 
@@ -168,7 +170,7 @@ pw_wt <- wt.cluster.full(water_table_summary, 2, 'PW')
 
 ggplot(pw_wt) + geom_boxplot(aes(x = clusters, y = GW_level))
 
-pw_wt <- pw_wt %>% add_column(Drought_Status = NA)
+pw_wt$Drought <- 'NA'
 
 ### before entering these variables, make sure that the cluster with the higher average water table in the plot corresponds to 'non-drought'
 
@@ -216,7 +218,6 @@ ggplot(pd.k, aes(x = k, y = gap, group = 1)) + geom_line() + geom_point() +
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank()) + 
   geom_point(aes(x = 2, y = pd.k[pd.k$k == 2,]$gap), shape = 18, size = 5, size = 2)
-
 
 ### before entering these variables, make sure that the cluster with the higher average water table in the plot corresponds to 'non-drought'
 
@@ -340,8 +341,6 @@ full_drought_wt$Date <- as.Date(full_drought_wt$Date)
 ################################################################################
 
 # Groundwater table depth with drought thresholds
-
-library(RColorBrewer)
 
 water_table_summary$Date <- ymd(water_table_summary$Date)
 drought2018 <- interval(start = "2018-03-15", end = "2019-02-28")

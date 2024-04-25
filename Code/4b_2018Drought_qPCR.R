@@ -5,6 +5,7 @@
 #                                                                              #
 # Author: Anna Burns                                                           #
 # Last edited: 23.04.2023                                                      #
+# Last tested: 25.04.2024                                                      #
 #                                                                              #
 ################################################################################
 
@@ -17,6 +18,7 @@ library(ggplot2)
 library(dplyr)
 library(stringr)
 library(readxl)
+library(rstatix)
 
 ################################################################################
 # Data upload                                                                  #
@@ -103,6 +105,7 @@ ggplot(qpcr.summary[qpcr.summary$Site == 'CW',], aes(x = Date, y = mean, col = D
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
+
 kruskal.test(Abundance~Dat2, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CW',])
 kruskal_effsize(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CW',])
 dunn_test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CW',], p.adjust.method = 'bonferroni')
