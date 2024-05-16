@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<eml:eml xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.2" packageId="9fa1e296-ba7f-4c9c-a068-e867777a221d" xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.2.0/eml.xsd https://eml.ecoinformatics.org/eml-2.2.0/eml.xsd" system="unknown">
+<eml:eml xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.2"
+  packageId="9fa1e296-ba7f-4c9c-a068-e867777a221d"
+  xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.2.0/eml.xsd https://eml.ecoinformatics.org/eml-2.2.0/eml.xsd"
+  system="unknown">
   <dataset>
     <title>Divergent responses of soil AOA and AOB to drought in rewetted fen peatlands</title>
     <creator>
@@ -12,15 +17,53 @@
     </creator>
     <pubDate>2024-04-24</pubDate>
     <abstract>
-      <para>Rewetted peatlands will experience more frequent drought conditions as the climate changes, and therefore it is necessary to study how nutrient cycling (and corresponding greenhouse gas emission) will respond in these novel ecosystems. Thus far, the impact of drought on ammonia oxidizing microbes in peatlands is unclear, despite their role as a rate-limiting step in nitrification. This study aims to identify trends in archaeal and bacterial ammonia oxidizer abundances and their feedbacks with nitrogen-cycling genes in two rewetted fens in northeastern Germany (PW and CW) from April 2018 to February 2019. Drought conditions in the peat soils is neutrally defined via a k-means clustering algorithm, and AOA and AOB abundances are quantified with amoA gene copy numbers in both DNA and RNA samples from the soil at time points throughout a drought cycle. These results are supported by metatranscriptome analysis and phylogenetic-based clade assignment of AOA ASVs from 16S rRNA amplicon sequencing. Shifts in nitrifying communities were found to correlate with overall site hydrological stability, with AOB outnumbering AOA at both sites. Both AOB and AOB increased at the PW site during the drought, following a decrease in nitrogen fixation gene expression after drought onset and preceding an increase in ANRA-associated genes at the end of the drought cycle. In contrast, CW AOA and AOB showed limited dynamism in response to drought. The feedbacks between water table stability, drought and the prevalence of ammonia oxidation functional genes is crucial to understand how novel rewetted fen ecosystems will respond to climate change, as well as how these conditions will further affect the quality of the peat substrate and microbial-driven nutrient cycling.</para>
+      <para>Rewetted peatlands will experience more frequent drought conditions as the climate
+        changes, and therefore it is necessary to study how nutrient cycling (and corresponding
+        greenhouse gas emission) will respond in these novel ecosystems. Thus far, the impact of
+        drought on ammonia oxidizing microbes in peatlands is unclear, despite their role as a
+        rate-limiting step in nitrification. This study aims to identify trends in archaeal and
+        bacterial ammonia oxidizer abundances and their feedbacks with nitrogen-cycling genes in two
+        rewetted fens in northeastern Germany (PW and CW) from April 2018 to February 2019. Drought
+        conditions in the peat soils is neutrally defined via a k-means clustering algorithm, and
+        AOA and AOB abundances are quantified with amoA gene copy numbers in both DNA and RNA
+        samples from the soil at time points throughout a drought cycle. These results are supported
+        by metatranscriptome analysis and phylogenetic-based clade assignment of AOA ASVs from 16S
+        rRNA amplicon sequencing. Shifts in nitrifying communities were found to correlate with
+        overall site hydrological stability, with AOB outnumbering AOA at both sites. Both AOB and
+        AOB increased at the PW site during the drought, following a decrease in nitrogen fixation
+        gene expression after drought onset and preceding an increase in ANRA-associated genes at
+        the end of the drought cycle. In contrast, CW AOA and AOB showed limited dynamism in
+        response to drought. The feedbacks between water table stability, drought and the prevalence
+        of ammonia oxidation functional genes is crucial to understand how novel rewetted fen
+        ecosystems will respond to climate change, as well as how these conditions will further
+        affect the quality of the peat substrate and microbial-driven nutrient cycling.</para>
     </abstract>
     <additionalInfo>
-      <para>The European Social Fund (ESF) and the Ministry of Education, Science and Culture of Mecklenburg-Western Pomerania funded this study under the WETSCAPES project (ESF/14-BM-A55-0027/16 to ESF/14-BM-A55-0035/16).</para>
-      <para>The data was curated and analyed with support from the Fulbright U.S. Student Program sponsored by the U.S. Department of State and German-American Fulbright Commission and the Napier Fellowship sponsored by the Napier Initiative and Pilgrim Place in Claremont, CA. </para>
-      <para>The contents of this work are the responsibility of the author and do not reflect the views of any of the aforementioned funding partners.</para>
+      <para>The European Social Fund (ESF) and the Ministry of Education, Science and Culture of
+        Mecklenburg-Western Pomerania funded this study under the WETSCAPES project
+        (ESF/14-BM-A55-0027/16 to ESF/14-BM-A55-0035/16).</para>
+      <para>The data was curated and analyed with support from the Fulbright U.S. Student Program
+        sponsored by the U.S. Department of State and German-American Fulbright Commission and the
+        Napier Fellowship sponsored by the Napier Initiative and Pilgrim Place in Claremont, CA. </para>
+      <para>The contents of this work are the responsibility of the author and do not reflect the
+        views of any of the aforementioned funding partners.</para>
     </additionalInfo>
     <intellectualRights>
-      <para>This information is released under the Creative Commons license - Attribution - CC BY (https://creativecommons.org/licenses/by/4.0/). The consumer of these data ("Data User" herein) is required to cite it appropriately in any publication that results from its use. The Data User should realize that these data may be actively used by others for ongoing research and that coordination may be necessary to prevent duplicate publication. The Data User is urged to contact the authors of these data if any questions about methodology or results occur. Where appropriate, the Data User is encouraged to consider collaboration or co-authorship with the authors. The Data User should realize that misinterpretation of data may occur if used out of context of the original study. While substantial efforts are made to ensure the accuracy of data and associated documentation, complete accuracy of data sets cannot be guaranteed. All data are made available "as is." The Data User should be aware, however, that data are updated periodically and it is the responsibility of the Data User to check for new versions of the data. The data authors and the repository where these data were obtained shall not be liable for damages resulting from any use or misinterpretation of the data. Thank you.
+      <para>This information is released under the Creative Commons license - Attribution - CC BY
+        (https://creativecommons.org/licenses/by/4.0/). The consumer of these data ("Data User"
+        herein) is required to cite it appropriately in any publication that results from its use.
+        The Data User should realize that these data may be actively used by others for ongoing
+        research and that coordination may be necessary to prevent duplicate publication. The Data
+        User is urged to contact the authors of these data if any questions about methodology or
+        results occur. Where appropriate, the Data User is encouraged to consider collaboration or
+        co-authorship with the authors. The Data User should realize that misinterpretation of data
+        may occur if used out of context of the original study. While substantial efforts are made
+        to ensure the accuracy of data and associated documentation, complete accuracy of data sets
+        cannot be guaranteed. All data are made available "as is." The Data User should be aware,
+        however, that data are updated periodically and it is the responsibility of the Data User to
+        check for new versions of the data. The data authors and the repository where these data
+        were obtained shall not be liable for damages resulting from any use or misinterpretation of
+        the data. Thank you.
 </para>
     </intellectualRights>
     <coverage>
@@ -87,27 +130,104 @@
       <methodStep>
         <description>
           <para>Soil sampling:</para>
-          <para>Soil samples were collected from WETSCAPES project sites between April 2017 and October 2019 [1,2,3]. Samples were collected from a rewetted percolation fen (PW) and a rewetted coastal fen (CW) in Mecklenburg-Vorpommern, Germany. PW is in the catchment areas of the rivers Trebel and Recknitz and was deeply drained in the 20th century before rewetting in 1998 as part of an EU-Life initiative [2].  CW was first drained for agricultural purposes in 1850 and rewetted via dike removal in 1993; since then, it has been periodically been flooded by brackish water from the Bay of Greifswald on the Baltic Sea [2]. While CW is currently used for cattle pasture, the PW site is not utilized for agricultural purposes and is managed via biannual mowing 2].</para>
-          <para>Three peat cores were sampled from each of the sites bi-monthly between April 2018 and February 2019 (April, June, August, October, December and February). Samples were removed from each core at a depth of 05-10 cm, homogenized and stored on ice in the field before long-term storage at -20°C. </para>
+          <para>Soil samples were collected from WETSCAPES project sites between April 2017 and
+            October 2019 [1,2,3]. Samples were collected from a rewetted percolation fen (PW) and a
+            rewetted coastal fen (CW) in Mecklenburg-Vorpommern, Germany. PW is in the catchment
+            areas of the rivers Trebel and Recknitz and was deeply drained in the 20th century
+            before rewetting in 1998 as part of an EU-Life initiative [2]. CW was first drained for
+            agricultural purposes in 1850 and rewetted via dike removal in 1993; since then, it has
+            been periodically been flooded by brackish water from the Bay of Greifswald on the
+            Baltic Sea [2]. While CW is currently used for cattle pasture, the PW site is not
+            utilized for agricultural purposes and is managed via biannual mowing 2].</para>
+          <para>Three peat cores were sampled from each of the sites bi-monthly between April 2018
+            and February 2019 (April, June, August, October, December and February). Samples were
+            removed from each core at a depth of 05-10 cm, homogenized and stored on ice in the
+            field before long-term storage at -20°C. </para>
           <para>Climate data:</para>
-          <para>Site water levels and soil temperatures were monitored on a continuous basis between September 2017 and February 2020 with Campbell Scientific CR300 Dataloggers (Logan, USA) and HOBO Dataloggers (Bourne, USA), respectively. Additional data on regional precipitation and temperature were accessed on 31.03.2022 from the Deutscher Wetterdienst at weather station 1757 in Greifswald (54.0962, 13.4057). Information on soil moisture and physicochemical measurements is included in the supplementary information.</para>
+          <para>Site water levels and soil temperatures were monitored on a continuous basis between
+            September 2017 and February 2020 with Campbell Scientific CR300 Dataloggers (Logan, USA)
+            and HOBO Dataloggers (Bourne, USA), respectively. Additional data on regional
+            precipitation and temperature were accessed on 31.03.2022 from the Deutscher
+            Wetterdienst at weather station 1757 in Greifswald (54.0962, 13.4057). Information on
+            soil moisture and physicochemical measurements is included in the supplementary
+            information.</para>
           <para>Amplicon sequencing: </para>
-          <para>The RNA and 16S rRNA extraction protocols and amplicon sequencing have previously been described in detail and are included in the supplementary documentation [1,2,4]. The qPCR protocol for the 16S rRNA gene is also described in these publications. Here, the absolute copy numbers of the 16S rRNA gene in each sample is multiplied with the relative abundance of each ASV in the 16S rRNA metagenome to analyze their absolute abundances. </para>
+          <para>The RNA and 16S rRNA extraction protocols and amplicon sequencing have previously
+            been described in detail and are included in the supplementary documentation [1,2,4].
+            The qPCR protocol for the 16S rRNA gene is also described in these publications. Here,
+            the absolute copy numbers of the 16S rRNA gene in each sample is multiplied with the
+            relative abundance of each ASV in the 16S rRNA metagenome to analyze their absolute
+            abundances. </para>
           <para>qPCR:</para>
-          <para>Quantitative PCR of bacterial and archaeal amoA genes were performed with the amoA-1F/2R [5] and camoA-19F [6,7] /tamoA-629R [8] primer pairs, respectively. The 15 μl reactions included 7.5 μl innuMIX qPCR DSGreen Standard 2x (Analytik Jena), 0.75 μl each of the primer pairs, 5 μl nuclease-free water and 1 μl template diluted to a concentration of 5 ng/μl. Reactions were cycled on a qTOWER³G (Analytik Jena) according to the following protocol: denaturation at 95°C for 2 minutes (archaeal amoA) and 5 minutes (bacterial amoA); 40 3-step cycles of 30 seconds denaturation at 95°C, 45 seconds annealing at 55°C, and elongation and scanning for 45 seconds at 72°C; and finally melting from 60 to 95°C for 15 seconds with ΔT 1°C. The reactions were quantified based on serial dilution standard curves of 10⁸-10² gene copies for bacterial amoA from Nitrosopira multiformis [9] and 10⁷-10¹ gene copies for archaeal amoA from Nitrososphaera viennensis [10]. The mean qPCR correlation coefficients for both the archaeal and bacterial amoA reactions were 0.99; the average slopes were -3.60 and -3.44, respectively, for the archaeal and bacterial reactions; and the mean reaction efficiencies were 0.90 and 0.96. </para>
+          <para>Quantitative PCR of bacterial and archaeal amoA genes were performed with the
+            amoA-1F/2R [5] and camoA-19F [6,7] /tamoA-629R [8] primer pairs, respectively. The 15 μl
+            reactions included 7.5 μl innuMIX qPCR DSGreen Standard 2x (Analytik Jena), 0.75 μl each
+            of the primer pairs, 5 μl nuclease-free water and 1 μl template diluted to a
+            concentration of 5 ng/μl. Reactions were cycled on a qTOWER³G (Analytik Jena) according
+            to the following protocol: denaturation at 95°C for 2 minutes (archaeal amoA) and 5
+            minutes (bacterial amoA); 40 3-step cycles of 30 seconds denaturation at 95°C, 45
+            seconds annealing at 55°C, and elongation and scanning for 45 seconds at 72°C; and
+            finally melting from 60 to 95°C for 15 seconds with ΔT 1°C. The reactions were
+            quantified based on serial dilution standard curves of 10⁸-10² gene copies for bacterial
+            amoA from Nitrosopira multiformis [9] and 10⁷-10¹ gene copies for archaeal amoA from
+            Nitrososphaera viennensis [10]. The mean qPCR correlation coefficients for both the
+            archaeal and bacterial amoA reactions were 0.99; the average slopes were -3.60 and
+            -3.44, respectively, for the archaeal and bacterial reactions; and the mean reaction
+            efficiencies were 0.90 and 0.96. </para>
           <para>RT-qPCR:</para>
-          <para>The protocol for reverse transcription qPCR (hereafter RT-qPCR) with the RNA extractions used the same reaction cycles respective to bacterial and archaeal amoA, with the addition of an initial 10 minute reverse transcription step at 50°C. The 15 μl reactions again contained 0.75 μl each of the same forward and reverse primers and 5 μl nuclease-free water. For RT-qPCR, the mastermix additionally contained 0.02 μl BSA (20 mg/ml concentration), 1 μl RNA template, and the following components from the iTaq Universal SYBR Green One-Step Kit (BioRad, California, USA): 7.5 μl iTaqSYBRMix and 0.1875 μl iScript reverse transcriptase. To transcribe the standards, 20 ul reactions containing 1 ug template DNA, 1 mM each ATP, GTP, CTP and UTP, 2 ul 10x Transcription Buffer, 40 U T7 RNA Polymerase, 20 U RNase Inhibitor, and up to 20 ul nuclease-free water were incubated at 37°C for 2 hours. Then, the reaction was stopped by adding 2 ul EDTA and 2 ul lithium chloride and gently mixing before adding 75 ul 75% ethanol and incubating at -80°C for 30 minutes. The standards were centrifuged at maximum speed for 15 minutes at 4°C before discarding the supernatant and washing the pellet with 100 ul of 100% ethanol. The ethanol was then removed and the RNA pellet was left to dry on ice for 5 minutes before being resuspended in 20-50 ul nuclease-free water. Finally, the remaining DNA in the standards was digested with the DNase I kit (Zymo Research, California, USA). The RT-qPCR protocol for AOA resulted in an efficiency of 0.93 and slope of -3.52 (R² = 0.999); the results of the AOB protocol were an efficiency of 0.88 and slope of -3.65 (R² = 0.999). </para>
+          <para>The protocol for reverse transcription qPCR (hereafter RT-qPCR) with the RNA
+            extractions used the same reaction cycles respective to bacterial and archaeal amoA,
+            with the addition of an initial 10 minute reverse transcription step at 50°C. The 15 μl
+            reactions again contained 0.75 μl each of the same forward and reverse primers and 5 μl
+            nuclease-free water. For RT-qPCR, the mastermix additionally contained 0.02 μl BSA (20
+            mg/ml concentration), 1 μl RNA template, and the following components from the iTaq
+            Universal SYBR Green One-Step Kit (BioRad, California, USA): 7.5 μl iTaqSYBRMix and
+            0.1875 μl iScript reverse transcriptase. To transcribe the standards, 20 ul reactions
+            containing 1 ug template DNA, 1 mM each ATP, GTP, CTP and UTP, 2 ul 10x Transcription
+            Buffer, 40 U T7 RNA Polymerase, 20 U RNase Inhibitor, and up to 20 ul nuclease-free
+            water were incubated at 37°C for 2 hours. Then, the reaction was stopped by adding 2 ul
+            EDTA and 2 ul lithium chloride and gently mixing before adding 75 ul 75% ethanol and
+            incubating at -80°C for 30 minutes. The standards were centrifuged at maximum speed for
+            15 minutes at 4°C before discarding the supernatant and washing the pellet with 100 ul
+            of 100% ethanol. The ethanol was then removed and the RNA pellet was left to dry on ice
+            for 5 minutes before being resuspended in 20-50 ul nuclease-free water. Finally, the
+            remaining DNA in the standards was digested with the DNase I kit (Zymo Research,
+            California, USA). The RT-qPCR protocol for AOA resulted in an efficiency of 0.93 and
+            slope of -3.52 (R² = 0.999); the results of the AOB protocol were an efficiency of 0.88
+            and slope of -3.65 (R² = 0.999). </para>
           <para>Sources:&#13;
-1. Wang H, Weil M, Dumack K, Zak D, Münch D, Günther A. Eukaryotic rather than prokaryotic microbiomes change over seasons in rewetted fen peatlands. FEMS Microbiol Ecol 2021; 97. &#13;
-2. Weil M, Wang H, Bengtsson M, Köhn D, Günther A, Jurasinski G. Long-Term Rewetting of Three Formerly Drained Peatlands Drives Congruent Compositional Changes in Pro- and Eukaryotic Soil Microbiomes through Environmental Filtering. Microorganisms 2020; 8. &#13;
-3. Jurasinski G, Ahmad S, Anadon-Rosell A, Berendt J, Beyer F, Bill R. From Understanding to Sustainable Use of Peatlands: The WETSCAPES Approach. Soil Systems 2020; 4: 14. &#13;
-4. Wang H, Bagnoud A, Ponce-Toledo RI, Kerou M, Weil M, Schleper C. Linking 16S rRNA Gene Classification to Gene Taxonomy Reveals Environmental Distribution of Ammonia-Oxidizing Archaeal Clades in Peatland Soils. 2021. , 0054621.&#13;
-5. Rotthauwe JH, Witzel KP, Liesack W. The ammonia monooxygenase structural gene amoA as a functional marker: molecular fine-scale analysis of natural ammonia-oxidizing populations. Appl Environ Microbiol 1997; 63: 4704–4712.&#13;
-6. Pester M, Rattei T, Flechl S, Gröngröft A, Richter A, Overmann J. amoA-based consensus phylogeny of ammonia-oxidizing archaea and deep sequencing of amoA genes from soils of four different geographic regions. Environ Microbiol 2012; 14: 525–539. &#13;
-7.Tourna M, Stieglmeier M, Spang A, Könneke M, Schintlmeister A, Urich T. Nitrososphaera viennensis, an ammonia oxidizing archaeon from soil. Proc Natl Acad Sci U S A 2011; 108: 8420–8425. &#13;
-8. Arce MI, Schiller D, Bengtsson MM, Hinze C, Jung H, Alves RJE. Drying and Rainfall Shape the Structure and Functioning of Nitrifying Microbial Communities in Riverbed Sediments. Front Microbiol 2018; 9: 2794. &#13;
-9. Norton JM, Klotz MG, Stein LY, Arp DJ, Bottomley PJ, Chain PSG. Complete genome sequence of Nitrosospira multiformis, an ammonia-oxidizing bacterium from the soil environment. Appl Environ Microbiol 2008; 74: 3559–3572. &#13;
-10. Stieglmeier M, Klingl A, Alves RJE, SK-MR R, Melcher M, Leisch N. Nitrososphaera viennensis gen. nov., sp. nov., an aerobic and mesophilic, ammonia-oxidizing archaeon from soil and a member of the archaeal phylum Thaumarchaeota. Int J Syst Evol Microbiol 2014; 64: 2738–2752. </para>
+            1. Wang H, Weil M, Dumack K, Zak D, Münch D, Günther A. Eukaryotic rather than
+            prokaryotic microbiomes change over seasons in rewetted fen peatlands. FEMS Microbiol
+            Ecol 2021; 97. &#13;
+            2. Weil M, Wang H, Bengtsson M, Köhn D, Günther A, Jurasinski G. Long-Term Rewetting of
+            Three Formerly Drained Peatlands Drives Congruent Compositional Changes in Pro- and
+            Eukaryotic Soil Microbiomes through Environmental Filtering. Microorganisms 2020; 8.
+            &#13;
+            3. Jurasinski G, Ahmad S, Anadon-Rosell A, Berendt J, Beyer F, Bill R. From
+            Understanding to Sustainable Use of Peatlands: The WETSCAPES Approach. Soil Systems
+            2020; 4: 14. &#13;
+            4. Wang H, Bagnoud A, Ponce-Toledo RI, Kerou M, Weil M, Schleper C. Linking 16S rRNA
+            Gene Classification to Gene Taxonomy Reveals Environmental Distribution of
+            Ammonia-Oxidizing Archaeal Clades in Peatland Soils. 2021. , 0054621.&#13;
+            5. Rotthauwe JH, Witzel KP, Liesack W. The ammonia monooxygenase structural gene amoA as
+            a functional marker: molecular fine-scale analysis of natural ammonia-oxidizing
+            populations. Appl Environ Microbiol 1997; 63: 4704–4712.&#13;
+            6. Pester M, Rattei T, Flechl S, Gröngröft A, Richter A, Overmann J. amoA-based
+            consensus phylogeny of ammonia-oxidizing archaea and deep sequencing of amoA genes from
+            soils of four different geographic regions. Environ Microbiol 2012; 14: 525–539. &#13;
+            7.Tourna M, Stieglmeier M, Spang A, Könneke M, Schintlmeister A, Urich T. Nitrososphaera
+            viennensis, an ammonia oxidizing archaeon from soil. Proc Natl Acad Sci U S A 2011; 108:
+            8420–8425. &#13;
+            8. Arce MI, Schiller D, Bengtsson MM, Hinze C, Jung H, Alves RJE. Drying and Rainfall
+            Shape the Structure and Functioning of Nitrifying Microbial Communities in Riverbed
+            Sediments. Front Microbiol 2018; 9: 2794. &#13;
+            9. Norton JM, Klotz MG, Stein LY, Arp DJ, Bottomley PJ, Chain PSG. Complete genome
+            sequence of Nitrosospira multiformis, an ammonia-oxidizing bacterium from the soil
+            environment. Appl Environ Microbiol 2008; 74: 3559–3572. &#13;
+            10. Stieglmeier M, Klingl A, Alves RJE, SK-MR R, Melcher M, Leisch N. Nitrososphaera
+            viennensis gen. nov., sp. nov., an aerobic and mesophilic, ammonia-oxidizing archaeon
+            from soil and a member of the archaeal phylum Thaumarchaeota. Int J Syst Evol Microbiol
+            2014; 64: 2738–2752. </para>
         </description>
       </methodStep>
     </methods>
@@ -285,7 +405,7 @@
           <measurementScale>
             <dateTime>
               <formatString>YY</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
           <missingValueCode>
@@ -845,11 +965,13 @@
                 <enumeratedDomain>
                   <codeDefinition>
                     <code>Drought</code>
-                    <definition>sample collected under drought conditions (defined by clustering algorithm)</definition>
+                    <definition>sample collected under drought conditions (defined by clustering
+                      algorithm)</definition>
                   </codeDefinition>
                   <codeDefinition>
                     <code>Non-drought</code>
-                    <definition>sample collected under non-drought conditions (defined by clustering algorithm)</definition>
+                    <definition>sample collected under non-drought conditions (defined by clustering
+                      algorithm)</definition>
                   </codeDefinition>
                 </enumeratedDomain>
               </nonNumericDomain>
@@ -923,7 +1045,7 @@
           <measurementScale>
             <dateTime>
               <formatString>M</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
           <missingValueCode>
@@ -1562,7 +1684,7 @@
           <measurementScale>
             <dateTime>
               <formatString>YY</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
           <missingValueCode>
@@ -2236,7 +2358,7 @@
           <measurementScale>
             <dateTime>
               <formatString>M</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
           <missingValueCode>
@@ -2688,7 +2810,7 @@
           <measurementScale>
             <dateTime>
               <formatString>YYYY-MM</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
         </attribute>
@@ -2758,7 +2880,7 @@
           <measurementScale>
             <dateTime>
               <formatString>M/D/YYYY</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
         </attribute>
@@ -11508,7 +11630,7 @@
           <measurementScale>
             <dateTime>
               <formatString>YY-BB</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
         </attribute>
@@ -12065,7 +12187,7 @@
           <measurementScale>
             <dateTime>
               <formatString>YYYYMMDD</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
           <missingValueCode>
@@ -20283,7 +20405,7 @@
           <measurementScale>
             <dateTime>
               <formatString>YY</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
           <missingValueCode>
@@ -20879,11 +21001,13 @@
                 <enumeratedDomain>
                   <codeDefinition>
                     <code>Drought</code>
-                    <definition>Sample collected under drought conditions (as defined by clustering algorithm)</definition>
+                    <definition>Sample collected under drought conditions (as defined by clustering
+                      algorithm)</definition>
                   </codeDefinition>
                   <codeDefinition>
                     <code>Non-drought</code>
-                    <definition>Sample collected under non-drought conditions (as defined by clustering algorithm)</definition>
+                    <definition>Sample collected under non-drought conditions (as defined by
+                      clustering algorithm)</definition>
                   </codeDefinition>
                 </enumeratedDomain>
               </nonNumericDomain>
@@ -20957,7 +21081,7 @@
           <measurementScale>
             <dateTime>
               <formatString>MM</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
           <missingValueCode>
@@ -21308,7 +21432,7 @@
           <measurementScale>
             <dateTime>
               <formatString>YYYYMMDD</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
         </attribute>
@@ -21488,7 +21612,7 @@
           <measurementScale>
             <dateTime>
               <formatString>YYYY</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
         </attribute>
@@ -21499,7 +21623,7 @@
           <measurementScale>
             <dateTime>
               <formatString>MM</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
         </attribute>
@@ -21510,7 +21634,7 @@
           <measurementScale>
             <dateTime>
               <formatString>DD</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
         </attribute>
@@ -21521,7 +21645,7 @@
           <measurementScale>
             <dateTime>
               <formatString>MM/DD/YYYY</formatString>
-              <dateTimeDomain/>
+              <dateTimeDomain />
             </dateTime>
           </measurementScale>
         </attribute>
