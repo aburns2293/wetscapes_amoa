@@ -26,6 +26,12 @@ library(rstatix)
 
 qpcr <- read.csv('./Data/amoa.qpcr.csv')
 
+# adding drought variable
+
+qpcr$Drought_Status <- 'NA'
+qpcr[qpcr$Date %in% c('2018-04', '2018-12', '2019-02'),]$Drought_Status <- 'Non-drought'
+qpcr[qpcr$Date %in% c('2018-06', '2018-08', '2018-10'),]$Drought_Status <- 'Drought'
+
 qpcr.summary <- qpcr %>% group_by(Site, Date, Domain) %>% summarise(mean = mean(Abundance),
                                                                     sd = sd(Abundance),
                                                                     n = n(),
@@ -106,9 +112,9 @@ ggplot(qpcr.summary[qpcr.summary$Site == 'CW',], aes(x = Date, y = mean, col = D
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
 
-kruskal.test(Abundance~Dat2, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CW',])
+kruskal.test(Abundance~Date2, data = qpcr[qpcr$Domain == 'AOA' & qpcr$Site == 'CW',])
 kruskal_effsize(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CW',])
-dunn_test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CW',], p.adjust.method = 'bonferroni')
+dunn.test(qpcr[qpcr$Domain == 'AOA' & qpcr$Site == 'CW',]$Abundance, qpcr[qpcr$Domain == 'AOA' & qpcr$Site == 'CW',]$Drought_Status, method = 'bonferroni')
 
 ## CD
 
