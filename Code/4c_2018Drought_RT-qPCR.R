@@ -5,6 +5,7 @@
 #                                                                              #  
 # Author: Anna Burns                                                           #
 # Last edited: 19.04.2024                                                      #
+# Last tested: 25.04.2024                                                      #
 #                                                                              #
 ################################################################################
 
@@ -12,7 +13,6 @@
 # Required packages                                                            #
 ################################################################################
 
-library(readxl)
 library(dplyr)
 library(tidyverse)
 library(ggplot2)
@@ -24,61 +24,37 @@ library(stringr)
 # Data upload                                                                  #
 ################################################################################
 
-rt.qpcr <- read_xlsx('./RT_qPCR/AOA_RT_qPCR.xlsx')
+rt.qpcr <- read.csv('Data/amoa.rtqpcr.csv')
 
-rt.qpcr[rt.qpcr$Date == '2018-02',]$Date <- '2019-02'
+rt.summary <- rt.qpcr %>% group_by(Site, Date, Domain) %>% summarise(Mean = mean(Abundance), SD = sd(Abundance), n = n(), SE = SD/sqrt(n))
 
-qpcr.short <- rt.qpcr %>% select(Sample, Date, Site, `A-AmoA gene copies per gram dry soil`, `B-AmoA gene copies per gram dry soil` )
-
-qpcr.short <- rename(qpcr.short, AOA = `A-AmoA gene copies per gram dry soil`)
-qpcr.short <- rename(qpcr.short, AOB = `B-AmoA gene copies per gram dry soil`)
-
-qpcr.long <- pivot_longer(qpcr.short, cols = c(AOA, AOB), names_to = 'Domain', values_to = 'Abundance')
-
-qpcr.long.summary <- qpcr.long %>% group_by(Site, Date, Domain) %>% summarise(Mean = mean(Abundance), SD = sd(Abundance), n = n(), SE = SD/sqrt(n))
-
-qpcr.long.summary$Date <- factor(qpcr.long.summary$Date, levels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
+rt.summary$Date <- factor(rt.summary$Date, levels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
 
 # combined qpcr and rt qpcr data
 
 qpcr <- read.csv('./Data/amoa.qpcr.csv')
 
-qpcr <- rename(qpcr, water = `Soil moisture (% wet soil)`)
-qpcr <- rename(qpcr, AOA = `A-AmoA gene copies per gram dry soil`)
-qpcr <- rename(qpcr, AOB = `B-AmoA gene copies per gram dry soil`)
 
-qpcr <- qpcr %>% select(Sample, Site, Date, water, AOA, AOB)
+qpcr <- qpcr %>% select(Sample, Site, Date, Domain, Abundance)
 
-rt.qpcr2 <- rt.qpcr
-rt.qpcr2 <- rename(rt.qpcr2, RT_AOA = AOA)
-rt.qpcr2 <- rename(rt.qpcr2, RT_AOB = AOB)
-rt.qpcr2 <- rt.qpcr2 %>% select(Sample, Site, Date, RT_AOA, RT_AOB)
+rt.qpcr2 <- rt.qpcr %>% select(Sample, Site, Date, Domain, Abundance)
 
 rt.qpcr2$Sample <- str_sub(rt.qpcr2$Sample, start = 5)
 qpcr$Sample <- str_sub(qpcr$Sample, start = 6)
 
-full <- left_join(qpcr, rt.qpcr2, by = 'Sample')
+rt.qpcr2$Type <- 'RT-qPCR'
+qpcr$Type <- 'qPCR'
 
-full.long <- full %>% select(-Date.y, -Site.y) %>% pivot_longer(!c(Sample, Site.x, Date.x, water), names_to = 'Domain', values_to = 'Abundance')
+full <- rbind(rt.qpcr2, qpcr)
 
-full.long$Type <- full.long$Domain
-
-full.long$Type[full.long$Type == 'RT_AOA'] <- 'RNA'
-full.long$Type[full.long$Type == 'RT_AOB'] <- 'RNA'
-full.long$Type[full.long$Type == 'AOA'] <- 'DNA'
-full.long$Type[full.long$Type == 'AOB'] <- 'DNA'
-
-full.long$Domain[full.long$Domain == 'RT_AOA'] <- 'AOA'
-full.long$Domain[full.long$Domain == 'RT_AOB'] <- 'AOB'
-
-full.long.summary <- full.long %>% na.omit() %>% group_by(Site.x, Type, Domain) %>% summarise(Mean = mean(Abundance), sd = sd(Abundance), n = n(), se = sd/sqrt(n))
+full.summary <- full %>% na.omit() %>% group_by(Site, Type, Domain, Date) %>% summarise(Mean = mean(Abundance), sd = sd(Abundance), n = n(), se = sd/sqrt(n))
 
 ################################################################################
 # Figures and Statistics                                                       #
 ################################################################################
 
 # PD
-ggplot(qpcr.long.summary[qpcr.long.summary$Site == 'PD',], aes(x = Date, y = Mean, col = Domain, group = Domain)) +
+ggplot(rt.summary[rt.summary$Site == 'PD' ,], aes(x = Date, y = Mean, col = Domain, group = Domain)) +
   geom_point(aes(shape = Domain), size = 10) + 
   geom_line(linewidth = 1.3) + 
   theme_classic() + 
@@ -98,7 +74,7 @@ ggplot(qpcr.long.summary[qpcr.long.summary$Site == 'PD',], aes(x = Date, y = Mea
         legend.background = element_blank())
 
 # PW
-ggplot(qpcr.long.summary[qpcr.long.summary$Site == 'PW',], aes(x = Date, y = Mean, col = Domain, group = Domain)) +
+ggplot(rt.summary[rt.summary$Site == 'PW',], aes(x = Date, y = Mean, col = Domain, group = Domain)) +
   geom_point(aes(shape = Domain), size = 10) + 
   geom_line(linewidth = 1.3) + 
   theme_classic() + 
@@ -118,7 +94,7 @@ ggplot(qpcr.long.summary[qpcr.long.summary$Site == 'PW',], aes(x = Date, y = Mea
         legend.background = element_blank())
 
 # CW
-ggplot(qpcr.long.summary[qpcr.long.summary$Site == 'CW',], aes(x = Date, y = Mean, col = Domain, group = Domain)) +
+ggplot(rt.summary[rt.summary$Site == 'CW',], aes(x = Date, y = Mean, col = Domain, group = Domain)) +
   geom_point(aes(shape = Domain), size = 10) + 
   geom_line(linewidth = 1.3) + 
   theme_classic() + 
@@ -139,7 +115,7 @@ ggplot(qpcr.long.summary[qpcr.long.summary$Site == 'CW',], aes(x = Date, y = Mea
 
 # summary figure with qPCR
 
-ggplot(full.long, aes(x = Site.x, y = Abundance, fill = Domain, pattern = Type)) +
+ggplot(full, aes(x = Site, y = Abundance, fill = Domain, pattern = Type)) +
   geom_boxplot_pattern(color = "black", 
                        pattern_fill = "black",
                        pattern_angle = 45,
@@ -158,7 +134,7 @@ ggplot(full.long, aes(x = Site.x, y = Abundance, fill = Domain, pattern = Type))
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
 
-ggplot(full.long.summary, aes(x = Site.x, y = Mean)) + 
+ggplot(full.summary, aes(x = Site, y = Mean)) + 
   geom_col_pattern(aes(fill = Domain, pattern = Type), position = 'dodge', 
                    color = "black", 
                    pattern_fill = "black",
@@ -179,5 +155,5 @@ ggplot(full.long.summary, aes(x = Site.x, y = Mean)) +
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
 
-kruskal.test(Abundance~Type, data = full.long[full.long$Domain == 'AOB' & full.long$Site.x == 'CD',])
-dunn_test(Abundance~Type, data = full.long[full.long$Domain == 'AOA' & full.long$Site.x == 'PD',], p.adjust.method = 'bonferroni')  
+kruskal.test(Abundance~Type, data = full[full$Domain == 'AOB' & full$Site == 'CD',])
+dunn_test(Abundance~Type, data = full[full$Domain == 'AOA' & full$Site == 'PD',], p.adjust.method = 'bonferroni')  

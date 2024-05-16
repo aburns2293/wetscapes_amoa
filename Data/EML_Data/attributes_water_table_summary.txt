@@ -1,9 +1,0 @@
-attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
-ID	sample ID	character				
-GW_temp	groundwater temperature	numeric	celsius			
-GW_level	groundwater depth below surface	numeric	centimeter			
-Site	site	categorical				
-Year	year	Date		YYYY		
-Month	month	Date		MM		
-Day	day	Date		DD		
-Date	combined date	Date		MM/DD/YYYY		

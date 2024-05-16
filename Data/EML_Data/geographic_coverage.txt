@@ -1,5 +1,0 @@
-geographicDescription	northBoundingCoordinate	southBoundingCoordinate	eastBoundingCoordinate	westBoundingCoordinate
-PW	54.1667	54.1667	13.2333	13.2333
-CW	54.2667	54.2667	13.65	13.65
-PD	54.2167	54.2167	13.95	13.95
-CD	54.2667	54.2667	13.65	13.65

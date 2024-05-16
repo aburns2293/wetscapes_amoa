@@ -4,6 +4,7 @@
 #                                                                              #
 # Author: Anna Burns                                                           #
 # Last edited: 26.07.2023                                                      #
+# Last tested: 25.04.2024                                                      #
 #                                                                              #
 ################################################################################
 
@@ -17,13 +18,14 @@ library(stringr)
 library(ggplot2)
 library(ggrepel)
 library(vegan)
+library(tibble)
 
 ################################################################################
 # Data upload                                                                  #
 ################################################################################
 
-asv <- read.csv('Data/prok.asv.csv') %>% remove_rownames() %>% column_to_rownames('X') 
-sample <- read.csv('../wetscapes/PROK Analysis/Old_Code/prok.sample.aprilnutrients.csv')
+asv <- read.csv('Data/prok.asv.csv') %>% remove_rownames() %>% column_to_rownames(var = 'ID') 
+sample <- read.csv('Data/prok.sample.csv')
 
 ################################################################################
 # Functions                                                                    #
@@ -175,30 +177,6 @@ TukeyHSD(beta)
 perm <- adonis2(dist ~ sample.short.shallow$loc, permutations = 999)
 
 perm
-
-## investigated dispersal around centroids
-
-full.beta$season2 <- factor(full.beta$season2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
-
-
-full.beta %>% filter(loc == 'CD') %>% summarize(mean = mean(beta.info), sd = sd(beta.info))
-ggplot(full.beta[full.beta$loc == 'CD',]) + geom_histogram(aes(x = beta.info))
-ggplot(full.beta[full.beta$loc == 'CD',]) + geom_point(aes(x = season2, y = beta.info, col = Drought_Status)) +
-  geom_hline(yintercept = 0.539) + 
-  geom_hline(yintercept = (0.539+0.106))
-
-ggplot(full.beta[full.beta$loc == 'PD',]) + geom_histogram(aes(x = beta.info))
-ggplot(full.beta[full.beta$loc == 'PD',]) + geom_point(aes(x = season2, y = beta.info))
-
-ggplot(full.beta[full.beta$loc == 'PW',]) + geom_histogram(aes(x = beta.info))
-ggplot(full.beta[full.beta$loc == 'PW',]) + geom_boxplot(aes(x = season2, y = beta.info))
-
-ggplot(full.beta[full.beta$loc == 'CW',]) + geom_histogram(aes(x = beta.info))
-ggplot(full.beta[full.beta$loc == 'CW',]) + geom_boxplot(aes(x = season2, y = beta.info))
-
-stats.disp <- full.beta %>% group_by(loc, season2) %>% summarize(mean = mean(beta.info), sd = sd(beta.info))
-
-full.beta %>% filter(loc == 'PW') %>% summarize(mean = mean(beta.info), sd = sd(beta.info))
 
 # PW ordination with environmental variables
 

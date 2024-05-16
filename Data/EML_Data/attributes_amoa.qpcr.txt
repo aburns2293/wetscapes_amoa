@@ -1,8 +1,0 @@
-attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
-Sample	sample name	character				
-Site	site name	categorical				
-Date	sampling date	Date		YYYY-MM		
-water	relative soil water content	numeric	dimensionless			
-Domain	domain	categorical				
-Abundance	gene copies per g dw soil	numeric	copiesDW			
-Date2	reformatted date	Date		M/D/YYYY		

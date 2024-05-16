@@ -1,4 +1,0 @@
-id	unitType	parentSI	multiplierToSI	description
-copiesDW	dimensionless			gene copies per gram dry weight soil
-mgL	volume			milligrams per liter
-ngul	volume			nanograms per microliter
