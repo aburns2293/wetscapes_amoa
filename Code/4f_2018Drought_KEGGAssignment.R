@@ -59,15 +59,11 @@ gene.test <- function(site, gene, Data) {
 
 # nitrogen fixation
 
-kegg <- kegg %>% remove_rownames() %>% column_to_rownames(var = 'X')
+nit.fix <- kegg %>% select(Sample, KO1381, KO1382, KO1383, KO1368, KO1402, KO1403, KO1401)
 
-nit.fix <- kegg %>% select(KO1381, KO1382, KO1383, KO1368, KO1402, KO1403, KO1401)
-
-nit.fix <- nit.fix %>% rownames_to_column(var = 'ID')
-
-nit.fix$Sample <- str_sub(nit.fix$ID, 1, 3)
-nit.fix$Site <- str_sub(nit.fix$ID, 1, 2)
-nit.fix$Date <- str_sub(nit.fix$ID, 5)
+nit.fix$SubSample <- str_sub(nit.fix$Sample, 1, 3)
+nit.fix$Site <- str_sub(nit.fix$Sample, 1, 2)
+nit.fix$Date <- str_sub(nit.fix$Sample, 5)
 nit.fix$Date <- factor(nit.fix$Date, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
 
 ggplot(nit.fix, aes(x = Date, y = KO1382, col = Site, group = Site)) + geom_point()
@@ -90,15 +86,15 @@ ggplot(nifh.sum, aes(x = Date, y = mean, col = Site, group = Site)) +
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
 
-nit.fix.long <- pivot_longer(nit.fix, cols = !c('ID', 'Sample', 'Site', 'Date'), names_to = 'Gene', values_to = 'Abundance')
+nit.fix.long <- pivot_longer(nit.fix, cols = !c('SubSample', 'Sample', 'Site', 'Date'), names_to = 'Gene', values_to = 'Abundance')
 
 levene_test(Abundance~Site, data = nit.fix.long)
 kruskal.test(Abundance~Site, data = nit.fix.long)
 
-gene.test('CW', 'KO1381', nit.fix.long)
+gene.test('PW', 'KO1382', nit.fix.long)
 
-kruskal_test(KO1381~Date, data = nit.fix[nit.fix$Site == 'CW',])
-dunn_test(KO1381~Date, data = nit.fix[nit.fix$Site == 'CW',], p.adjust.method = 'bonferroni')
+kruskal_test(KO1382~Date, data = nit.fix[nit.fix$Site == 'PW',])
+dunn_test(KO1382~Date, data = nit.fix[nit.fix$Site == 'PW',], p.adjust.method = 'bonferroni')
 
 ggplot(nit.fix.long[nit.fix.long$Site == 'CW',], aes(x = Date, y = Abundance)) + 
   geom_point() + 
@@ -158,18 +154,16 @@ kruskal.test(KO1382~Site, data = nit.fix)
 
 # denitrification
 
-denit <- kegg %>% select(KO1362, KO1363, KO1365, KO1378, KO1379, KO1361, KO1394, KO1385, KO1377, KO1366)
+denit <- kegg %>% select(Sample, KO1362, KO1363, KO1365, KO1378, KO1379, KO1361, KO1394, KO1385, KO1377, KO1366)
 
-denit <- denit %>% rownames_to_column(var = 'ID')
-
-denit$Sample <- str_sub(denit$ID, 1, 3)
-denit$Site <- str_sub(denit$ID, 1, 2)
-denit$Date <- str_sub(denit$ID, 5)
+denit$SubSample <- str_sub(denit$Sample, 1, 3)
+denit$Site <- str_sub(denit$Sample, 1, 2)
+denit$Date <- str_sub(denit$Sample, 5)
 denit$Date <- factor(denit$Date, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
 
-denit.long <- pivot_longer(denit, cols = !c('ID', 'Sample', 'Site', 'Date'), names_to = 'KEGG_Code', values_to = 'Abundance')
+denit.long <- pivot_longer(denit, cols = !c('SubSample', 'Sample', 'Site', 'Date'), names_to = 'KEGG_Code', values_to = 'Abundance')
 
-denit.fix.long$Gene <- 'NA'
+denit.long$Gene <- 'NA'
 
 denit.long[denit.long$KEGG_Code == 'KO1362',]$Gene <-'NarG'
 denit.long[denit.long$KEGG_Code == 'KO1363',]$Gene <-'NarH'
@@ -244,9 +238,9 @@ ggplot(denit.dynamic.sum[denit.dynamic.sum$Site == 'PW',], aes(x = Date, y = mea
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
 
-gene.test('CW', 'NirK', denit.fix.long)
-kruskal.test(Abundance~Date, denit.fix.long[denit.fix.long$Site == 'CW' & denit.fix.long$Gene == 'NirK',])
-dunn_test(Abundance~Date, data = denit.fix.long[denit.fix.long$Site == 'CW' & denit.fix.long$Gene == 'NirK',])
+gene.test('PW', 'NirB', denit.long)
+kruskal.test(Abundance~Date, denit.long[denit.long$Site == 'PW' & denit.long$Gene == 'NarH',])
+dunn_test(Abundance~Date, data = denit.long[denit.long$Site == 'PW' & denit.long$Gene == 'NarH',])
 
 ggplot(denit.dynamic.sum[denit.dynamic.sum$Site == 'CW',], aes(x = Date, y = mean, col = Gene)) + 
   geom_point(size = 4) + 
@@ -409,16 +403,14 @@ dunn_test(Abundance~Date, data = anra.long[anra.long$Site == 'CW' & anra.long$Ge
 
 # heat map of all interesting nitrogen-cycling genes
 
-dynamic <- kegg %>% select(X, KO1381, KO1383, KO1382, KO1357, KO1364, KO1287, KO1288, KO1289)
+dynamic <- kegg %>% select(Sample, KO1381, KO1383, KO1382, KO1357, KO1364, KO1287, KO1288, KO1289, KO1385, KO1361, KO1362, KO1363)
 
-dynamic <- rename(dynamic, ID = X)
-
-dynamic$Sample <- str_sub(dynamic$ID, 1, 3)
-dynamic$Site <- str_sub(dynamic$ID, 1, 2)
-dynamic$Date <- str_sub(dynamic$ID, 5)
+dynamic$SubSample <- str_sub(dynamic$Sample, 1, 3)
+dynamic$Site <- str_sub(dynamic$Sample, 1, 2)
+dynamic$Date <- str_sub(dynamic$Sample, 5)
 dynamic$Date <- factor(dynamic$Date, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
 
-dynamic.long <- pivot_longer(dynamic, cols = !c('ID', 'Sample', 'Site', 'Date'), names_to = 'KEGG_Code', values_to = 'Abundance')
+dynamic.long <- pivot_longer(dynamic, cols = !c('Sample', 'SubSample', 'Site', 'Date'), names_to = 'KEGG_Code', values_to = 'Abundance')
 
 dynamic.long$Gene <- 'NA'
 
@@ -430,6 +422,10 @@ dynamic.long[dynamic.long$KEGG_Code == 'KO1364',]$Gene <-'nasA'
 dynamic.long[dynamic.long$KEGG_Code == 'KO1287',]$Gene <-'amoA'
 dynamic.long[dynamic.long$KEGG_Code == 'KO1288',]$Gene <-'amoB'
 dynamic.long[dynamic.long$KEGG_Code == 'KO1289',]$Gene <-'amoC'
+dynamic.long[dynamic.long$KEGG_Code == 'KO1385',]$Gene <- 'norB'
+dynamic.long[dynamic.long$KEGG_Code == 'KO1361',]$Gene <- 'nirK'
+dynamic.long[dynamic.long$KEGG_Code == 'KO1362',]$Gene <- 'narG'
+dynamic.long[dynamic.long$KEGG_Code == 'KO1363',]$Gene <- 'narH'
 
 dynamic.long$Gene <- factor(dynamic.long$Gene, levels = c('nasA', 'nirB', 'nifK', 'nifH', 'nifD'))
 
@@ -449,17 +445,19 @@ pw.mean.wide <- dynamic.mean.wide %>% filter(Site == 'PW') %>% column_to_rowname
 
 pw.mean.m <- t(data.matrix(pw.mean.wide))
 
-pw.mean.ordered <- pw.mean.m[c(1,2,3,5,6,7,4,8),]
+pw.mean.ordered <- pw.mean.m[c(10,6,12,11,4,5,7,8,9,1,2,3),]
 
-heatmap(pw.mean.ordered, Colv = NA, Rowv = NA, scale = 'row')
+pheatmap(pw.mean.ordered, scale = 'row', cluster_row = FALSE, cluster_cols = FALSE, 
+         color = colorRampPalette(brewer.pal(n = 7, name = "YlOrBr"))(100))
 
 cw.mean.wide <- dynamic.mean.wide %>% filter(Site == 'CW') %>% column_to_rownames(var = 'Date') %>% select(!Site)
 
 cw.mean.m <- t(data.matrix(cw.mean.wide))
 
-cw.mean.ordered <- cw.mean.m[c(1,2,3,5,6,7,4,8),]
+cw.mean.ordered <- cw.mean.m[c(10,6,12,11,4,5,7,8,9,1,2,3),]
 
-heatmap(cw.mean.ordered, Colv = NA, Rowv = NA, scale = 'row')
+pheatmap(cw.mean.ordered, scale = 'row', cluster_row = FALSE, cluster_cols = FALSE, 
+         color = colorRampPalette(brewer.pal(n = 7, name = "YlOrBr"))(100)) 
 
 ggplot(dynamic.mean[dynamic.mean$Site == 'PW',], aes(x = Date, y = Gene, size = mean)) + geom_point() + theme_classic()
 

@@ -1,4 +1,7 @@
 "","ID","L1","L2","L3","L4","L5"
+"1287","KO1287","KEGG","Metabolism","Energy metabolism","ko00680 Methane metabolism","K10944 methane/ammonia monooxygenase subunit A [EC:1.14.18.3 1.14.99.39]"
+"1288","KO1288","KEGG","Metabolism","Energy metabolism","ko00680 Methane metabolism","K10945 methane/ammonia monooxygenase subunit B"
+"1289","KO1289","KEGG","Metabolism","Energy metabolism","ko00680 Methane metabolism","K10946 methane/ammonia monooxygenase subunit C"
 "1356","KO1356","KEGG","Metabolism","Energy metabolism","ko00910 Nitrogen metabolism","K00360 assimilatory nitrate reductase electron transfer subunit [EC:1.7.99.-]"
 "1357","KO1357","KEGG","Metabolism","Energy metabolism","ko00910 Nitrogen metabolism","K00362 nitrite reductase (NADH) large subunit [EC:1.7.1.15]"
 "1358","KO1358","KEGG","Metabolism","Energy metabolism","ko00910 Nitrogen metabolism","K00363 nitrite reductase (NADH) small subunit [EC:1.7.1.15]"
