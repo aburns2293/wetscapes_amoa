@@ -87,19 +87,58 @@ write.csv(aob.ps.present, 'Data/16srRNA.aob.csv')
 ################################################################################
 
 aoa.summary <- aoa.16s %>% filter(loc == 'PW' | loc == 'CW') %>% group_by(loc, season2, group) %>% summarise(AOA = sum(Abundance))
-aoa.avg <- aoa.summary %>% group_by(loc, season2) %>% summarise(aoa.mean = mean(AOA), aoa.sd = sd(AOA), n.aoa = n(), se.aoa = aoa.sd/sqrt(n.aoa)) 
+aoa.avg <- aoa.summary %>% group_by(loc, season2) %>% summarise(mean = mean(AOA), sd = sd(AOA), n = n(), se = sd/sqrt(n)) 
+aoa.avg$Domain <- 'AOA'
 
 aob.summary <- aob.16s %>% filter(loc == 'PW' | loc == 'CW') %>% group_by(loc, season2, group) %>% summarise(AOB = sum(Abundance))
+aob.avg <- aob.summary %>% group_by(loc, season2) %>% summarise(mean = mean(AOB), sd = sd(AOB), n = n(), se = sd/sqrt(n)) 
+aob.avg$Domain <- 'AOB'
 
-summary.16s <- left_join(aob.summary, aoa.summary, by = c('loc', 'season2'))
-summary.16s$AOA <- summary.16s$AOA %>% replace_na(0)
+summary.16s <- rbind(aoa.avg, aob.avg)
 
-summary.long <- pivot_longer(summary.16s, cols = !c('loc', 'season2'), names_to = 'Domain', values_to = 'Abundance')
-
-summary.long$season2 <- factor(summary.long$season2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'), 
+summary.16s$season2 <- factor(summary.16s$season2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'), 
                                labels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
 
 
-ggplot(summary.long[summary.long$loc == 'PW',], aes(x = season2, y = Abundance, group = Domain, col = Domain)) +
-  geom_point(aes(shape = Domain)) +
-  geom_line()
+ggplot(summary.16s[summary.16s$loc == 'PW',], aes(x = season2, y = mean, group = Domain, col = Domain)) +
+  geom_point(aes(shape = Domain), size = 10) +
+  geom_line(linewidth = 1.3) +
+  theme_classic() + 
+  geom_errorbar(aes(ymax = mean + se, ymin = mean, color = Domain), width = 0.1, linewidth = 1) +
+  scale_shape_manual(values = c(15,16,17)) + 
+  scale_color_manual(values = c("#A04000","#117A65")) + 
+  scale_y_continuous(limits = c(0, 3.5e9), breaks = c(0, 1e9, 2e9, 3e9), labels = c('0.0','1.0', '2.0','3.0')) +
+  scale_x_discrete(drop = FALSE) + 
+  labs(y = expression(paste(x10^{9}, ' copies/g DW soil')), x = '') + 
+  theme(axis.title=element_text(size=20,face = "bold"),
+        axis.title.y=element_text(margin = margin(l = 60)),
+        axis.text=element_text(size=20,face = "bold"),
+        axis.text.x = element_text(angle=45, vjust = 0.6),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank(),
+        aspect.ratio = 1)
+
+ggplot(summary.16s[summary.16s$loc == 'CW',], aes(x = season2, y = mean, group = Domain, col = Domain)) +
+  geom_point(aes(shape = Domain), size = 10) +
+  geom_line(linewidth = 1.3) +
+  theme_classic() + 
+  geom_errorbar(aes(ymax = mean + se, ymin = mean, color = Domain), width = 0.1, linewidth = 1) +
+  scale_shape_manual(values = c(15,16,17)) + 
+  scale_color_manual(values = c("#A04000","#117A65")) + 
+  scale_y_continuous(limits = c(0, 1.2e9), breaks = c(0, 3e8, 6e8, 9e8, 12e8), labels = c('0.0','3.0', '6.0','9.0', '12.0')) +
+  scale_x_discrete(drop = FALSE) + 
+  labs(y = expression(paste(x10^{8}, ' copies/g DW soil')), x = '') + 
+  theme(axis.title=element_text(size=20,face = "bold"),
+        axis.title.y=element_text(margin = margin(l = 60)),
+        axis.text=element_text(size=20,face = "bold"),
+        axis.text.x = element_text(angle=45, vjust = 0.6),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank(),
+        aspect.ratio = 1)
+
