@@ -342,7 +342,7 @@ full_drought_wt$Date <- as.Date(full_drought_wt$Date)
 
 # Groundwater table depth with drought thresholds
 
-water_table_summary$Date <- ymd(water_table_summary$Date)
+water_table_summary$Date <- mdy(water_table_summary$Date)
 drought2018 <- interval(start = "2018-03-15", end = "2019-02-28")
 water_table_drought2018 <- water_table_summary[which(water_table_summary$Date %within% drought2018),]
 
@@ -359,11 +359,13 @@ ggplot(water_table_drought2018[water_table_drought2018$Site == 'CW' | water_tabl
   scale_x_date(breaks = seq(as.Date('2017-12-01'), as.Date('2020-02-21'), by = "2 months"), date_labels = '%Y-%m') +
   theme(axis.title=element_text(size=24,face = "bold"),
         axis.text=element_text(size=20,face = "bold"),
+        axis.text.x = element_text(angle=45, vjust = 0.6),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, linewidth=2),
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
-        legend.background = element_blank()) + 
+        legend.background = element_blank(),
+        aspect.ratio = 1) + 
   guides(color = guide_legend(list(linetype = c(1, 1, 1, 1) ) ) )
 
 # Relationship between groundwater depth and drought status
@@ -406,12 +408,14 @@ ggplot(sample_topsoil_sum, aes(x=season2, y = mean, col = loc, group=loc)) +
   geom_errorbar(aes(ymax = mean + se, ymin = mean), width = 0.1, size = 1) +
   scale_color_manual(values = c("#A04000", "#117A65")) + 
   theme(axis.title=element_text(size=24,face = "bold"),
+        axis.text.x = element_text(angle=45, vjust = 0.6),
         axis.text=element_text(size=20,face = "bold"),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, linewidth=2),
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
-        legend.background = element_blank())
+        legend.background = element_blank(),
+        aspect.ratio = 1)
 
 levene_test(formula = water~season2, data = sample_topsoil[sample_topsoil$loc == 'PW',])
 shapiro_test(sample_topsoil[sample_topsoil$loc == 'PW',]$water)
