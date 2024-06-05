@@ -23,14 +23,17 @@ library(tibble)
 
 sample <- read.csv('Data/prok.sample.csv') %>% remove_rownames() %>% column_to_rownames(var = 'Sample')
 
-sample.2018drought <- sample %>% dplyr::filter(season2 == '18-Feb' | season2 == '18-Apr'| season2 == '18-Jun' | 
+sample.2018drought <- sample %>% dplyr::filter(season2 == '18-Apr'| season2 == '18-Jun' | 
                                           season2 == '18-Aug' | season2 == '18-Oct' | season2 == '18-Dec' | season2 == '19-Feb')
 
 sample.2018drought.topsoil <- sample.2018drought %>% filter(depth == '05-10 cm')
 
-sample.2018drought.topsoil$season2 <- factor(sample.2018drought.topsoil$season2, levels = c('18-Feb', '18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
+sample.2018drought.topsoil$season2 <- factor(sample.2018drought.topsoil$season2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
 
 nitrate.ammonium <- sample.2018drought.topsoil %>% select(NO3,NH4,loc,season2) %>% pivot_longer(!c(loc,season2), names_to = 'Nutrient', values_to='Volume')
+
+doc <- sample.2018drought.topsoil %>% select(loc, season2, TOM, Bio, hCOM, lCOM) %>% mutate(Other = TOM - Bio - hCOM - lCOM) %>%
+  pivot_longer(!c(loc,season2), names_to = 'Fraction', values_to='Volume')
 
 ################################################################################
 # Code                                                                         #
@@ -119,3 +122,43 @@ ggplot(nitrate.ammonium, aes(x = season2, y = Volume, group_by = Nutrient)) +
                 xmax = 5.5,
                 ymin = -Inf,
                 ymax = Inf), fill = 'red', alpha = 0.003)
+
+# DOC figures
+
+doc.summary <- doc %>% group_by(loc, season2, Fraction) %>% summarize(mean = mean(Volume), n = n(), sd = sd(Volume), se = sd/sqrt(n))
+
+doc.summary$season2 <- factor(doc.summary$season2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'), 
+                              labels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
+
+ggplot(doc.summary[doc.summary$loc == 'PW',], aes(x = season2, y = mean, col = Fraction, group = Fraction)) + 
+  geom_point(aes(shape = Fraction), size = 10) + 
+  geom_line(linewidth = 1.3) + 
+  geom_errorbar(aes(ymax = mean + se, ymin = mean, color = Fraction), width = 0.1, linewidth = 1) +
+  scale_shape_manual(values = c(15,16, 17, 18, 8)) + 
+  scale_color_manual(values = c("#8DDBE0","#117A65","#7D3C98", '#E6C229', '#F46677')) + 
+  scale_x_discrete(drop = FALSE) + 
+  labs(y = 'mg C/g DW soil', x = '') + 
+  theme(axis.title=element_text(size=20,face = "bold", colour = '#36454F'),
+        axis.text=element_text(size=20,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.8),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank())
+
+ggplot(doc.summary[doc.summary$loc == 'CW',], aes(x = season2, y = mean, col = Fraction, group = Fraction)) + 
+  geom_point(aes(shape = Fraction), size = 10) + 
+  geom_line(linewidth = 1.3) + 
+  geom_errorbar(aes(ymax = mean + se, ymin = mean, color = Fraction), width = 0.1, linewidth = 1) +
+  scale_shape_manual(values = c(15,16, 17, 18, 8)) + 
+  scale_color_manual(values = c("#8DDBE0","#117A65","#7D3C98", '#E6C229', '#F46677')) + 
+  scale_x_discrete(drop = FALSE) + 
+  labs(y = 'mg C/g DW soil', x = '') + 
+  theme(axis.title=element_text(size=20,face = "bold", colour = '#36454F'),
+        axis.text=element_text(size=20,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.8),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank())
+
