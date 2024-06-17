@@ -123,12 +123,16 @@ ggplot(nitrate.ammonium, aes(x = season2, y = Volume, group_by = Nutrient)) +
                 ymin = -Inf,
                 ymax = Inf), fill = 'red', alpha = 0.003)
 
-# DOC figures
+# DOC figures and statistics
 
 doc.summary <- doc %>% group_by(loc, season2, Fraction) %>% summarize(mean = mean(Volume), n = n(), sd = sd(Volume), se = sd/sqrt(n))
 
 doc.summary$season2 <- factor(doc.summary$season2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'), 
                               labels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
+
+levene_test(doc[doc$Fraction == 'TOM',], Volume~loc)
+shapiro.test(doc[doc$Fraction == 'TOM',]$Volume)
+kruskal.test(doc[doc$Fraction == 'lCOM',], Volume~loc)
 
 ggplot(doc.summary[doc.summary$loc == 'PW',], aes(x = season2, y = mean, col = Fraction, group = Fraction)) + 
   geom_point(aes(shape = Fraction), size = 10) + 
@@ -140,11 +144,22 @@ ggplot(doc.summary[doc.summary$loc == 'PW',], aes(x = season2, y = mean, col = F
   labs(y = 'mg C/g DW soil', x = '') + 
   theme(axis.title=element_text(size=20,face = "bold", colour = '#36454F'),
         axis.text=element_text(size=20,face = "bold"),
+        axis.text.x = element_text(angle=45, vjust = 0.6),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
-        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.8),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.85,0.8),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
-        legend.background = element_blank())
+        legend.background = element_blank(),
+        aspect.ratio = 1)
+
+levene_test(doc[doc$loc == 'PW' & doc$Fraction == 'lCOM',], Volume~season2)
+shapiro_test(doc[doc$loc == 'PW' & doc$Fraction == 'lCOM',]$Volume)
+
+summary(aov(Volume ~ season2, doc[doc$loc == 'PW' & doc$Fraction == 'hCOM',]))
+TukeyHSD((aov(Volume ~ season2, doc[doc$loc == 'PW' & doc$Fraction == 'hCOM',])))
+
+kruskal_test(doc[doc$loc == 'PW' & doc$Fraction == 'lCOM',], Volume~season2)
+dunn_test(doc[doc$loc == 'PW' & doc$Fraction == 'Bio',], Volume~season2, p.adjust.method= 'BH')
 
 ggplot(doc.summary[doc.summary$loc == 'CW',], aes(x = season2, y = mean, col = Fraction, group = Fraction)) + 
   geom_point(aes(shape = Fraction), size = 10) + 
@@ -156,9 +171,63 @@ ggplot(doc.summary[doc.summary$loc == 'CW',], aes(x = season2, y = mean, col = F
   labs(y = 'mg C/g DW soil', x = '') + 
   theme(axis.title=element_text(size=20,face = "bold", colour = '#36454F'),
         axis.text=element_text(size=20,face = "bold"),
+        axis.text.x = element_text(angle=45, vjust = 0.6),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
-        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.8),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.87,0.8),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
-        legend.background = element_blank())
+        legend.background = element_blank(),
+        aspect.ratio = 1)
+
+levene_test(doc[doc$loc == 'CW' & doc$Fraction == 'TOM',], Volume~season2)
+shapiro_test(doc[doc$loc == 'CW' & doc$Fraction == 'TOM',]$Volume)
+
+summary(aov(Volume ~ season2, doc[doc$loc == 'CW' & doc$Fraction == 'TOM',]))
+TukeyHSD((aov(Volume ~ season2, doc[doc$loc == 'CW' & doc$Fraction == 'TOM',])))
+
+kruskal_test(doc[doc$loc == 'CW' & doc$Fraction == 'lCOM',], Volume~season2)
+dunn_test(doc[doc$loc == 'CW' & doc$Fraction == 'lCOM',], Volume~season2, p.adjust.method= 'BH')
+
+## nitrate and ammonium figures
+
+nit.summary <- nitrate.ammonium %>% group_by(loc, season2, Nutrient) %>% summarize(mean = mean(Volume), n = n(), sd = sd(Volume), se = sd/sqrt(n))
+
+nit.summary$season2 <- factor(nit.summary$season2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'), 
+                              labels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
+
+ggplot(nit.summary[nit.summary$loc == 'CW',], aes(x = season2, y = mean, col = Nutrient, group = Nutrient)) + 
+  geom_point(aes(shape = Nutrient), size = 10) + 
+  geom_line(linewidth = 1.3) + 
+  geom_errorbar(aes(ymax = mean + se, ymin = mean, color = Nutrient), width = 0.1, linewidth = 1) +
+  scale_shape_manual(values = c(15,16)) + 
+  scale_color_manual(values = c("#7D3C98", '#E6C229')) + 
+  scale_x_discrete(drop = FALSE) + 
+  labs(y = 'mg C/g DW soil', x = '') + 
+  theme(axis.title=element_text(size=20,face = "bold", colour = '#36454F'),
+        axis.text=element_text(size=20,face = "bold"),
+        axis.text.x = element_text(angle=45, vjust = 0.6),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank(),
+        aspect.ratio = 1)
+
+ggplot(nit.summary[nit.summary$loc == 'PW',], aes(x = season2, y = mean, col = Nutrient, group = Nutrient)) + 
+  geom_point(aes(shape = Nutrient), size = 10) + 
+  geom_line(linewidth = 1.3) + 
+  geom_errorbar(aes(ymax = mean + se, ymin = mean, color = Nutrient), width = 0.1, linewidth = 1) +
+  scale_shape_manual(values = c(15,16)) + 
+  scale_color_manual(values = c("#7D3C98", '#E6C229')) + 
+  scale_x_discrete(drop = FALSE) + 
+  labs(y = 'mg C/g DW soil', x = '') + 
+  theme(axis.title=element_text(size=20,face = "bold", colour = '#36454F'),
+        axis.text=element_text(size=20,face = "bold"),
+        axis.text.x = element_text(angle=45, vjust = 0.6),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank(),
+        aspect.ratio = 1)
 

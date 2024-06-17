@@ -30,13 +30,30 @@ aob <- read.csv('Data/mRNA.aob.absolute.csv')
 # Functions                                                                    #
 ################################################################################
 
+gene.test <- function(site, Data, subunit) {
+  
+  distrib <- levene_test(formula = Amount~month, data = Data[Data$Site == site & Data$Subunit == subunit,])
+  print(paste0('Distribution (Levene) p = ', round(distrib$p, digits = 3)))
+  
+  norm <- shapiro.test(Data[Data$Site == site & Data$Subunit == subunit,]$Amount)
+  print(paste0('Normality (Shapiro-Wilk) p = ', round(norm$p, digits = 3)))
+  
+  aov <- summary(aov(Amount ~ month, Data[Data$Site == site & Data$Subunit == subunit,]))
+  print(paste0('Anova p = ', round(aov[[1]][[5]][[1]], digits = 3)))
+  
+  tukey <- TukeyHSD(aov(Amount ~ month, Data[Data$Site == site & Data$Subunit == subunit,]))
+  print('Tukey HSD output:')
+  print(tukey[['month']])
+}
+
 ################################################################################
 # Code                                                                         #
 ################################################################################
 
 # preparing aoa data
 
-aoa$month <- factor(aoa$month, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
+aoa$month <- factor(aoa$month, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'),
+                    labels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
 
 aoa_summary <- aoa %>% group_by(Site, month, Subunit) %>% summarise(mean = mean(Amount), sd = sd(Amount), n = n(), se = sd/sqrt(n))
 
@@ -81,6 +98,10 @@ ggplot(aoa_summary[aoa_summary$Site == 'CW',], aes(x = month, y = mean, col = Su
         legend.background = element_blank(),
         aspect.ratio = 1)
 
+gene.test('CW', aoa, 'amo-A')
+kruskal.test(Amount~month, data = aoa[aoa$Site == 'CW' & aoa$Subunit == 'amo-A',])
+dunn_test(aoa[aoa$Site == 'CW' & aoa$Subunit == 'amo-A',], Amount~month, p.adjust.method = 'bonferroni')
+
 ## percolation wet site
 
 ggplot(aoa_summary[aoa_summary$Site == 'PW',], aes(x = month, y = mean, col = Subunit, group = Subunit)) +
@@ -102,6 +123,10 @@ ggplot(aoa_summary[aoa_summary$Site == 'PW',], aes(x = month, y = mean, col = Su
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank(),
         aspect.ratio = 1)
+
+gene.test('PW', aoa, 'amo-C')
+kruskal.test(Amount~month, data = aoa[aoa$Site == 'PW' & aoa$Subunit == 'amo-C',])
+dunn_test(aoa[aoa$Site == 'PW' & aoa$Subunit == 'amo-C',], Amount~month, p.adjust.method = 'bonferroni')
 
 # aob
 
@@ -127,6 +152,10 @@ ggplot(aob_summary[aob_summary$Site == 'CW',], aes(x = month, y = mean, col = Su
         legend.background = element_blank(),
         aspect.ratio = 1)
 
+gene.test('CW', aob, 'amo-C')
+kruskal.test(Amount~month, data = aob[aob$Site == 'CW' & aob$Subunit == 'amo-B',])
+dunn_test(aob[aob$Site == 'CW' & aob$Subunit == 'amo-B',], Amount~month, p.adjust.method = 'bonferroni')
+
 # percolation wet site
 
 ggplot(aob_summary[aob_summary$Site == 'PW',], aes(x = month, y = mean, col = Subunit, group = Subunit)) +
@@ -148,3 +177,33 @@ ggplot(aob_summary[aob_summary$Site == 'PW',], aes(x = month, y = mean, col = Su
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank(),
         aspect.ratio = 1)
+
+gene.test('PW', aob, 'amo-B')
+kruskal.test(Amount~month, data = aob[aob$Site == 'PW' & aob$Subunit == 'amo-B',])
+dunn_test(aob[aob$Site == 'PW' & aob$Subunit == 'amo-B',], Amount~month, p.adjust.method = 'bonferroni')
+
+# summary statistics
+
+aoa$Domain <- 'AOA'
+aob$Domain <- 'AOB'
+
+## aoa vs. aob in PW
+
+pw.aom <- rbind(aoa[aoa$Site == 'PW',], aob[aob$Site == 'PW',]) 
+levene_test(pw.aom, Amount ~ Domain)
+kruskal.test(pw.aom, Amount ~ Domain)
+
+## aoa vs. aob in CW
+
+cw.aom <- rbind(aoa[aoa$Site == 'CW',], aob[aob$Site == 'CW',]) 
+levene_test(cw.aom, Amount ~ Domain)
+shapiro_test(cw.aom$Amount)
+kruskal.test(cw.aom, Amount ~ Domain)
+
+## CW aoa vs. PW aoa
+
+levene_test(aoa, Amount ~ Site)
+shapiro_test(aoa$Amount, aoa)
+kruskal.test(aoa[aoa$Subunit == 'amo-C',], Amount~Site)
+dunn_test(aoa[aoa$Subunit == 'amo-C',], Amount~Site, p.adjust.method = 'bonferroni')
+

@@ -66,7 +66,7 @@ ggplot(qpcr.summary[qpcr.summary$Site == 'PW',], aes(x = Date, y = mean, col = D
 
 kruskal.test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PW',])
 kruskal_effsize(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PW',])
-dunn_test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PW',], p.adjust.method = 'bonferroni')
+dunn_test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PW',], p.adjust.method = 'BH')
 
 ## PD
 
@@ -93,7 +93,7 @@ ggplot(qpcr.summary[qpcr.summary$Site == 'PD',], aes(x = Date, y = mean, col = D
 
 kruskal.test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PD',])
 kruskal_effsize(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PD',])
-dunn_test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PD',], p.adjust.method = 'bonferroni')
+dunn_test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'PD',], p.adjust.method = 'BH')
 
 ## CW
 
@@ -120,7 +120,7 @@ ggplot(qpcr.summary[qpcr.summary$Site == 'CW',], aes(x = Date, y = mean, col = D
 
 kruskal.test(Abundance~Date2, data = qpcr[qpcr$Domain == 'AOA' & qpcr$Site == 'CW',])
 kruskal_effsize(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CW',])
-dunn.test(qpcr[qpcr$Domain == 'AOA' & qpcr$Site == 'CW',]$Abundance, qpcr[qpcr$Domain == 'AOA' & qpcr$Site == 'CW',]$Drought_Status, method = 'bonferroni')
+dunn_test(qpcr[qpcr$Domain == 'AOA' & qpcr$Site == 'CW',], Abundance~Date2, p.adjust.method = 'BH')
 
 ## CD
 
@@ -145,4 +145,4 @@ ggplot(qpcr.summary[qpcr.summary$Site == 'CD',], aes(x = Date, y = mean, col = D
 
 kruskal.test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CD',])
 kruskal_effsize(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CD',])
-dunn_test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CD',], p.adjust.method = 'bonferroni')
+dunn_test(Abundance~Date, data = qpcr[qpcr$Domain == 'AOB' & qpcr$Site == 'CD',], p.adjust.method = 'BH')

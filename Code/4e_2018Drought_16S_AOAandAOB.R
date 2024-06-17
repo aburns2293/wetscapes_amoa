@@ -15,6 +15,7 @@
 library(dplyr)
 library(tidyverse)
 library(phyloseq)
+library(rstatix)
 
 # to install phyloseq (do not run if already installed)
 # if (!require("BiocManager", quietly = TRUE))
@@ -29,6 +30,25 @@ library(phyloseq)
 aoa.16s <- read.csv('Data/16srRNA.aoa.csv')
 aob.16s <- read.csv('Data/16srRNA.aob.csv')
 
+################################################################################
+# Functions                                                                    #
+################################################################################
+
+gene.test <- function(site, Data) {
+  
+  distrib <- levene_test(formula = Abundance~season2, data = Data[Data$loc == site,])
+  print(paste0('Distribution (Levene) p = ', round(distrib$p, digits = 3)))
+  
+  norm <- shapiro.test(Data[Data$loc == site,]$Abundance)
+  print(paste0('Normality (Shapiro-Wilk) p = ', round(norm$p, digits = 3)))
+  
+  aov <- summary(aov(Abundance~season2, Data[Data$loc == site,]))
+  print(paste0('Anova p = ', round(aov[[1]][[5]][[1]], digits = 3)))
+  
+  tukey <- TukeyHSD(aov(Abundance~season2, Data[Data$loc == site,]))
+  print('Tukey HSD output:')
+  print(tukey[['season2']])
+}
 ################################################################################
 # Code                                                                         #
 ################################################################################
@@ -121,6 +141,14 @@ ggplot(summary.16s[summary.16s$loc == 'PW',], aes(x = season2, y = mean, group =
         legend.background = element_blank(),
         aspect.ratio = 1)
 
+gene.test(Data = aoa.16s, site = 'PW')
+kruskal.test(Abundance~season2, data = aoa.16s[aoa.16s$loc == 'PW',])
+dunn_test(aoa.16s[aoa.16s$loc == 'PW',], Abundance~season2, p.adjust.method = 'bonferroni')
+
+gene.test(Data = aob.16s, site = 'PW')
+kruskal.test(Abundance~season2, data = aob.16s[aob.16s$loc == 'PW',])
+dunn_test(aob.16s[aob.16s$loc == 'PW',], Abundance~season2, p.adjust.method = 'bonferroni')
+
 ggplot(summary.16s[summary.16s$loc == 'CW',], aes(x = season2, y = mean, group = Domain, col = Domain)) +
   geom_point(aes(shape = Domain), size = 10) +
   geom_line(linewidth = 1.3) +
@@ -141,4 +169,8 @@ ggplot(summary.16s[summary.16s$loc == 'CW',], aes(x = season2, y = mean, group =
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank(),
         aspect.ratio = 1)
+
+gene.test(Data = aob.16s, site = 'CW')
+kruskal.test(Abundance~season2, data = aob.16s[aob.16s$loc == 'CW',])
+dunn_test(aob.16s[aob.16s$loc == 'CW',], Abundance~season2, p.adjust.method = 'bonferroni')
 

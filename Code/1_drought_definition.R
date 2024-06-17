@@ -425,7 +425,7 @@ mean(sample_topsoil[sample_topsoil$loc == 'PW',]$water)
 levene_test(formula = water~season2, data = sample_topsoil[sample_topsoil$loc == 'CW',])
 shapiro_test(sample_topsoil[sample_topsoil$loc == 'CW',]$water)
 kruskal_test(formula = water~season2, data = sample_topsoil[sample_topsoil$loc == 'CW',])
-dunn_test(formula = water~season2, data = sample_topsoil[sample_topsoil$loc == 'CW',])
+dunn_test(formula = water~season2, data = sample_topsoil[sample_topsoil$loc == 'CW',], p.adjust.method = 'BH')
 
 # Topsoil water content and drought
 
