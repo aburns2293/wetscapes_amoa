@@ -142,15 +142,16 @@ pw.k$k <- row.names(pw.k)
 pw.k$k <- factor(pw.k$k, levels = seq(1, 10, 1))
 
 ggplot(pw.k, aes(x = k, y = gap, group = 1)) + geom_line() + geom_point() + 
-  ylab('Gap') +
-  ggtitle('a) PW') + 
-  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+  ylab('Gap(k)') +
+  xlab('Clusters k') +
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=20,face = "bold"),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
-        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
-        legend.background = element_blank()) + 
-  geom_point(aes(x = 2, y = pw.k[pw.k$k == 2,]$gap), shape = 18, size = 5, size = 2)
+        legend.text = element_text(size = 20),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank(),
+        aspect.ratio = 1) + 
+  geom_point(aes(x = 2, y = pw.k[pw.k$k == 2,]$gap), shape = 18, size = 10, col = '#7D3C98')
 
 ggplot(water_table_summary[water_table_summary$Site == 'PW',]) + geom_histogram(aes(x = GW_level)) + geom_vline(aes(xintercept = -5.45), linetype = 2, size = 2) + 
   ggtitle('a) PW') + 
