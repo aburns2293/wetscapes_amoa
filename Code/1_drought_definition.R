@@ -153,16 +153,18 @@ ggplot(pw.k, aes(x = k, y = gap, group = 1)) + geom_line() + geom_point() +
         aspect.ratio = 1) + 
   geom_point(aes(x = 2, y = pw.k[pw.k$k == 2,]$gap), shape = 18, size = 10, col = '#7D3C98')
 
-ggplot(water_table_summary[water_table_summary$Site == 'PW',]) + geom_histogram(aes(x = GW_level)) + geom_vline(aes(xintercept = -5.45), linetype = 2, size = 2) + 
-  ggtitle('a) PW') + 
+ggplot(water_table_summary[water_table_summary$Site == 'PW',]) + 
+  geom_histogram(aes(x = GW_level)) + 
+  geom_vline(aes(xintercept = -5.45), linetype = 2, size = 2, col = '#7D3C98') + 
   xlab('Groundwater Depth (cm)') + 
-  ylab('Count') + 
-  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+  ylab('') + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=20,face = "bold"),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
-        legend.background = element_blank())
+        legend.background = element_blank(),
+        aspect.ratio = 1)
 
 ### identify the 'best' cluster from this figure and enter it in the wt.cluster.full function
 ### 'best' - balance between minimal cluster silhouette and minimal number of clusters for interpretation
@@ -190,16 +192,18 @@ pd_wt <- wt.cluster.full(water_table_summary, 2, 'PD')
 
 ggplot(pd_wt) + geom_boxplot(aes(x = clusters, y = GW_level))
 
-ggplot(water_table_summary[water_table_summary$Site == 'PD',]) + geom_histogram(aes(x = GW_level)) + geom_vline(aes(xintercept = -31.05), linetype = 2, size = 2) + 
-  ggtitle('b) PD') + 
+ggplot(water_table_summary[water_table_summary$Site == 'PD',]) + 
+  geom_histogram(aes(x = GW_level)) + 
+  ylab('')+ 
+  geom_vline(aes(xintercept = -31.05), linetype = 2, size = 2, col = '#7D3C98') + 
   xlab('Groundwater Depth (cm)') + 
-  ylab('Count') + 
-  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=20,face = "bold"),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
-        legend.background = element_blank())
+        legend.background = element_blank(),
+        aspect.ratio = 1)
 
 pd_wt <- pd_wt %>% add_column(Drought_Status = NA)
 
@@ -210,15 +214,16 @@ pd.k$k <- row.names(pd.k)
 pd.k$k <- factor(pd.k$k, levels = seq(1, 10, 1))
 
 ggplot(pd.k, aes(x = k, y = gap, group = 1)) + geom_line() + geom_point() + 
-  ylab('Gap') +
-  ggtitle('b) PD') + 
-  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+  ylab('Gap(k)') +
+  xlab('Clusters k') + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=20,face = "bold"),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
-        legend.background = element_blank()) + 
-  geom_point(aes(x = 2, y = pd.k[pd.k$k == 2,]$gap), shape = 18, size = 5, size = 2)
+        legend.background = element_blank(),
+        aspect.ratio = 1) + 
+  geom_point(aes(x = 2, y = pd.k[pd.k$k == 2,]$gap), shape = 18, size = 10, col = '#7D3C98')
 
 ### before entering these variables, make sure that the cluster with the higher average water table in the plot corresponds to 'non-drought'
 
@@ -244,26 +249,28 @@ cw.k$k <- row.names(cw.k)
 cw.k$k <- factor(cw.k$k, levels = seq(1, 10, 1))
 
 ggplot(cw.k, aes(x = k, y = gap, group = 1)) + geom_line() + geom_point() + 
-  ylab('Gap') +
-  ggtitle('c) CW') + 
-  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+  ylab('Gap(k)') +
+  xlab('Clusters k') + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=20,face = "bold"),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
-        legend.background = element_blank()) + 
-  geom_point(aes(x = 2, y = cw.k[cw.k$k == 2,]$gap), shape = 18, size = 5, size = 2)
+        legend.background = element_blank(),
+        aspect.ratio = 1) + 
+  geom_point(aes(x = 2, y = cw.k[cw.k$k == 2,]$gap), shape = 18, size = 10, col = '#7D3C98')
 
-ggplot(water_table_summary[water_table_summary$Site == 'CW',]) + geom_histogram(aes(x = GW_level)) + geom_vline(aes(xintercept = -30.24), linetype = 2, size = 2) + 
-  ggtitle('c) CW') + 
+ggplot(water_table_summary[water_table_summary$Site == 'CW',]) + geom_histogram(aes(x = GW_level)) + 
+  geom_vline(aes(xintercept = -30.24), linetype = 2, size = 2, col = '#7D3C98') + 
   xlab('Groundwater Depth (cm)') + 
-  ylab('Count') + 
-  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+  ylab('') + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=20,face = "bold"),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
-        legend.background = element_blank())
+        legend.background = element_blank(),
+        aspect.ratio = 1)
 
 ### before entering these variables, make sure that the cluster with the higher average water table in the plot corresponds to 'non-drought'
 
@@ -289,26 +296,28 @@ cd.k$k <- row.names(cd.k)
 cd.k$k <- factor(cd.k$k, levels = seq(1, 10, 1))
 
 ggplot(cd.k, aes(x = k, y = gap, group = 1)) + geom_line() + geom_point() + 
-  ylab('Gap') +
-  ggtitle('d) CD') + 
-  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+  ylab('Gap(k)') +
+  xlab('Clusters k') +
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=20,face = "bold"),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
-        legend.background = element_blank()) + 
-  geom_point(aes(x = 2, y = cd.k[cd.k$k == 2,]$gap), shape = 18, size = 5, size = 2)
+        legend.background = element_blank(),
+        aspect.ratio = 1) + 
+  geom_point(aes(x = 2, y = cd.k[cd.k$k == 2,]$gap), shape = 18, size = 10, col = '#7D3C98')
 
-ggplot(water_table_summary[water_table_summary$Site == 'CD',]) + geom_histogram(aes(x = GW_level)) + geom_vline(aes(xintercept = -45.88), linetype = 2, size = 2) + 
-  ggtitle('d) CD') + 
+ggplot(water_table_summary[water_table_summary$Site == 'CD',]) + geom_histogram(aes(x = GW_level)) + 
+  geom_vline(aes(xintercept = -45.88), linetype = 2, size = 2, col = '#7D3C98') + 
   xlab('Groundwater Depth (cm)') + 
-  ylab('Count') + 
-  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
+  ylab('') + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=20,face = "bold"),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
-        legend.background = element_blank())
+        legend.background = element_blank(),
+        aspect.ratio = 1)
 
 ### before entering these variables, make sure that the cluster with the higher average water table in the plot corresponds to 'non-drought'
 

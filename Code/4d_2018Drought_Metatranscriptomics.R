@@ -26,6 +26,8 @@ aoa <- read.csv('Data/mRNA.aoa.absolute.csv')
 
 aob <- read.csv('Data/mRNA.aob.absolute.csv')
 
+ssu.prok <- read.csv('Data/16srRNA.ssu.csv')
+
 ################################################################################
 # Functions                                                                    #
 ################################################################################
@@ -207,3 +209,46 @@ shapiro_test(aoa$Amount, aoa)
 kruskal.test(aoa[aoa$Subunit == 'amo-C',], Amount~Site)
 dunn_test(aoa[aoa$Subunit == 'amo-C',], Amount~Site, p.adjust.method = 'bonferroni')
 
+# ssu figures and statistics
+
+ssu.prok.sum <- ssu.prok %>% group_by(Site, Date, Domain) %>% summarise(mean = mean(Total), n = n(), sd = sd(Total), se = sd/n)
+ssu.prok.sum$Date <- factor(ssu.prok.sum$Date, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'), 
+                            labels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
+
+ggplot(ssu.prok.sum[ssu.prok.sum$Site == 'PW',], aes(x = Date, y = mean, col = Domain, group = Domain)) + 
+  geom_point(aes(shape = Domain), size = 10) + 
+  geom_line(size = 1.3) + 
+  theme_classic() + 
+  geom_errorbar(aes(ymax = mean + se, ymin = mean, color = Domain), width = 0.1, linewidth = 1) +
+  scale_shape_manual(values = c(15,17)) + 
+  scale_color_manual(values = c("#A04000","#117A65")) + 
+  scale_y_continuous(limits = c(0,7.5e11), breaks = c(0, 2e11, 4e11, 6e11), labels = c('0.0','2.0','4.0', '6.0')) +
+  scale_x_discrete(drop = FALSE) + 
+  labs(x = '', y = expression(paste(x10^{11}, ' copies/g DW soil'))) +
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=20,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        axis.text.x = element_text(angle=45, vjust = 0.6),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank(),
+        aspect.ratio = 1)
+
+ggplot(ssu.prok.sum[ssu.prok.sum$Site == 'CW',], aes(x = Date, y = mean, col = Domain, group = Domain)) + 
+  geom_point(aes(shape = Domain), size = 10) + 
+  geom_line(size = 1.3) + 
+  theme_classic() + 
+  geom_errorbar(aes(ymax = mean + se, ymin = mean, color = Domain), width = 0.1, linewidth = 1) +
+  scale_shape_manual(values = c(15,17)) + 
+  scale_color_manual(values = c("#A04000","#117A65")) + 
+  scale_y_continuous(limits = c(0,3.9e11), breaks = c(0, 1e11, 2e11, 3e11), labels = c('0.0','1.0','2.0', '3.0')) +
+  scale_x_discrete(drop = FALSE) + 
+  labs(x = '', y = expression(paste(x10^{11}, ' copies/g DW soil'))) +
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=20,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        axis.text.x = element_text(angle=45, vjust = 0.6),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank(),
+        aspect.ratio = 1)

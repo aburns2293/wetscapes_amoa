@@ -18,12 +18,15 @@ library(dplyr)
 library(ggplot2)
 library(phyloseq)
 library(tibble)
+library(vegan)
 
 ################################################################################
 # Data upload                                                                  #
 ################################################################################
 
 absolute.abundance <- read.csv('Data/prok.absolute.abundances.asv.csv') %>% remove_rownames() %>% column_to_rownames(var = 'Sample')
+
+asv <- read.csv('Data/prok.asv.csv')
 
 tax <- read.csv('Data/prok.tax.csv')
 
@@ -111,7 +114,7 @@ ggplot(comammox.summary[comammox.summary$loc == 'PW',], aes(x = season2, y = mea
         title = element_text(size = 20, face = 'bold'),
         axis.title.y=element_text(margin = margin(l = 60)),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
-        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.7),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
 
@@ -166,3 +169,50 @@ ggplot(comammox.summary[comammox.summary$loc == 'CD',], aes(x = season2, y = mea
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank())
+
+# relative abundances
+
+asv <- asv %>% remove_rownames() %>% column_to_rownames(var = 'ID')
+
+asv.t <- t(asv)
+
+rel.abundance <- decostand(asv.t, method = 'total')
+
+comammox_975 <- potential.comammox %>% filter(PercID >= 97.5) 
+
+comammox_975_list <- as.vector(comammox_975$ASV) %>% unique()
+
+comammox.rel <- rel.abundance[,colnames(rel.abundance) %in% comammox_975_list]
+
+max(comammox.rel)
+
+comammox.rel.present <- comammox.rel[,colSums(comammox.rel) > 0]
+
+totals <- rowSums(comammox.rel.present)
+max(totals)
+mean(totals)
+sd(totals)/417
+n <- n(totals)
+se <- (sd(totals)/n(totals))
+# relative abundances for drought period
+
+relevant.samples <- c('X16S.18AprPW105', 'X16S.18AprPW205', 'X16S.18AprPW305', 
+                      'X16S.18AprCW105', 'X16S.18AprCW205', 'X16S.18AprCW305',
+                      'X16S.18JunPW105', 'X16S.18JunPW205', 'X16S.18JunPW305',
+                      'X16S.18JunCW105', 'X16S.18JunCW205', 'X16S.18JunCW305',
+                      'X16S.18AugPW105', 'X16S.18AugPW205', 'X16S.18AugPW305',
+                      'X16S.18AugCW105', 'X16S.18AugCW205', 'X16S.18AugCW305',
+                      'X16S.18OctPW105', 'X16S.18OctPW205', 'X16S.18OctPW305',
+                      'X16S.18OctCW105', 'X16S.18OctCW205', 'X16S.18OctCW305',
+                      'X16S.18DecPW105', 'X16S.18DecPW205', 'X16S.18DecPW305',
+                      'X16S.18DecCW105', 'X16S.18DecCW205', 'X16S.18DecCW305',
+                      'X16S.19FebPW105', 'X16S.19FebPW205', 'X16S.19FebPW305',
+                      'X16S.19FebCW105', 'X16S.19FebCW205', 'X16S.19FebCW305'
+                      )
+
+drought.comammox.rel <- comammox.rel[rownames(comammox.rel) %in% relevant.samples,]
+
+pw.comammox.rel <- drought.comammox.rel[str_detect(rownames(drought.comammox.rel), 'PW') == TRUE,]
+
+max(pw.comammox.rel)
+mean(pw.comammox.rel)
