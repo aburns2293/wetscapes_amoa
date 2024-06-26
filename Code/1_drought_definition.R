@@ -44,6 +44,10 @@ greifswald_precip <- read_delim("Data/precipitation.data.txt",
 
 greifswald_temp <- read_delim("../wetscapes_amoa/Data/temperature.data.txt", delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
+# redox data
+
+redox <- read.csv('Data/redox.csv') %>% select(-X)
+
 ################################################################################
 # Functions                                                                    #
 ################################################################################
@@ -452,3 +456,32 @@ ggplot(sample_topsoil, aes(x=loc, y=water, col = Drought_Status)) +
   ylab('Relative water weight (%)') +
   annotate('text', x=c(1, 2, 2.9, 3.9), y=c(78,78,95,100), label=c('p=0.03','p=0.12','p=0.01','p=0.28')) +
   ggtitle('Topsoil water content during drought phases')
+
+# redox values
+
+redox$Date <- factor(redox$Date, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'), 
+                     labels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
+
+ggplot(redox, aes(x = Date, y = mean, col = Site, group = Site)) + 
+  geom_point(aes(shape = Site), size = 10) + 
+  scale_y_continuous(limits = c(-150, 650), breaks = c(-100, 100, 300, 500)) +
+  geom_hline(yintercept = 300, col = 'dark grey', linetype = 'dashed', size = 1.3) + 
+  geom_line(size = 1.3) + 
+  theme_classic() +
+  ylab('Redox potential (mV)') +
+  xlab('') + 
+  scale_shape_manual(values = c(15,16)) +
+  scale_color_manual(values = c("#A04000", "#117A65")) + 
+  theme(axis.title=element_text(size=24,face = "bold"),
+        axis.text.x = element_text(angle=45, vjust = 0.6),
+        axis.text=element_text(size=20,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, linewidth=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank(),
+        aspect.ratio = 1)
+
+levene_test(redox, mean ~ Site)
+shapiro.test(redox$mean)
+summary(aov(mean ~Site, redox))
