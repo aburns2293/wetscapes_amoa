@@ -17,6 +17,7 @@ library(stringr)
 library(tidyverse)
 library(RColorBrewer)
 library(lubridate)
+library(rstatix)
 
 ################################################################################
 # Data upload                                                                  #
@@ -215,6 +216,14 @@ ssu.prok.sum <- ssu.prok %>% group_by(Site, Date, Domain) %>% summarise(mean = m
 ssu.prok.sum$Date <- factor(ssu.prok.sum$Date, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'), 
                             labels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
 
+shapiro_test(ssu.prok[ssu.prok$Domain == 'AOA',]$Total)
+levene_test(ssu.prok[ssu.prok$Domain == 'AOA',], Total ~ Site)
+kruskal_test(ssu.prok[ssu.prok$Domain == 'AOA',], Total ~ Site)
+
+shapiro_test(ssu.prok[ssu.prok$Domain == 'AOB',]$Total)
+levene_test(ssu.prok[ssu.prok$Domain == 'AOB',], Total ~ Site)
+kruskal_test(ssu.prok[ssu.prok$Domain == 'AOB',], Total ~ Site)
+
 ggplot(ssu.prok.sum[ssu.prok.sum$Site == 'PW',], aes(x = Date, y = mean, col = Domain, group = Domain)) + 
   geom_point(aes(shape = Domain), size = 10) + 
   geom_line(size = 1.3) + 
@@ -234,6 +243,20 @@ ggplot(ssu.prok.sum[ssu.prok.sum$Site == 'PW',], aes(x = Date, y = mean, col = D
         legend.background = element_blank(),
         aspect.ratio = 1)
 
+shapiro_test(ssu.prok[ssu.prok$Site == 'PW' ,]$Total)
+levene_test(ssu.prok[ssu.prok$Site == 'PW',], Total ~ Domain)
+kruskal_test(ssu.prok[ssu.prok$Site == 'PW',], Total ~ Domain)
+
+shapiro_test(ssu.prok[ssu.prok$Site == 'PW' & ssu.prok$Domain == 'AOB',]$Total)
+levene_test(ssu.prok[ssu.prok$Site == 'PW'& ssu.prok$Domain == 'AOB',], Total ~ Date)
+summary(aov(Total ~ Date, ssu.prok[ssu.prok$Site == 'PW'& ssu.prok$Domain == 'AOB',]))
+TukeyHSD(aov(Total ~ Date, ssu.prok[ssu.prok$Site == 'PW'& ssu.prok$Domain == 'AOB',]))
+
+shapiro_test(ssu.prok[ssu.prok$Site == 'PW' & ssu.prok$Domain == 'AOA',]$Total)
+levene_test(ssu.prok[ssu.prok$Site == 'PW'& ssu.prok$Domain == 'AOA',], Total ~ Date)
+summary(aov(Total ~ Date, ssu.prok[ssu.prok$Site == 'PW'& ssu.prok$Domain == 'AOA',]))
+TukeyHSD(aov(Total ~ Date, ssu.prok[ssu.prok$Site == 'PW'& ssu.prok$Domain == 'AOA',]))
+
 ggplot(ssu.prok.sum[ssu.prok.sum$Site == 'CW',], aes(x = Date, y = mean, col = Domain, group = Domain)) + 
   geom_point(aes(shape = Domain), size = 10) + 
   geom_line(size = 1.3) + 
@@ -252,3 +275,17 @@ ggplot(ssu.prok.sum[ssu.prok.sum$Site == 'CW',], aes(x = Date, y = mean, col = D
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank(),
         aspect.ratio = 1)
+
+shapiro_test(ssu.prok[ssu.prok$Site == 'CW' ,]$Total)
+levene_test(ssu.prok[ssu.prok$Site == 'CW',], Total ~ Domain)
+kruskal_test(ssu.prok[ssu.prok$Site == 'CW',], Total ~ Domain)
+
+shapiro_test(ssu.prok[ssu.prok$Site == 'CW' & ssu.prok$Domain == 'AOB',]$Total)
+levene_test(ssu.prok[ssu.prok$Site == 'CW'& ssu.prok$Domain == 'AOB',], Total ~ Date)
+kruskal.test(ssu.prok[ssu.prok$Site == 'CW'& ssu.prok$Domain == 'AOB',], Total ~ Date)
+dunn_test(ssu.prok[ssu.prok$Site == 'CW'& ssu.prok$Domain == 'AOB',], Total ~ Date, p.adjust.method = 'bonferroni')
+
+shapiro_test(ssu.prok[ssu.prok$Site == 'CW' & ssu.prok$Domain == 'AOA',]$Total)
+levene_test(ssu.prok[ssu.prok$Site == 'CW'& ssu.prok$Domain == 'AOA',], Total ~ Date)
+kruskal.test(ssu.prok[ssu.prok$Site == 'CW'& ssu.prok$Domain == 'AOA',], Total ~ Date)
+dunn_test(ssu.prok[ssu.prok$Site == 'CW'& ssu.prok$Domain == 'AOA',], Total ~ Date, p.adjust.method = 'bonferroni')
