@@ -32,7 +32,7 @@ sample.2018drought.topsoil$season2 <- factor(sample.2018drought.topsoil$season2,
 
 nitrate.ammonium <- sample.2018drought.topsoil %>% select(NO3,NH4,loc,season2) %>% pivot_longer(!c(loc,season2), names_to = 'Nutrient', values_to='Volume')
 
-doc <- sample.2018drought.topsoil %>% select(loc, season2, TOM, Bio, hCOM, lCOM) %>% mutate(Other = TOM - Bio - hCOM - lCOM) %>%
+doc <- sample %>% select(loc, season2, TOM, Bio, hCOM, lCOM) %>% mutate(Other = TOM - Bio - hCOM - lCOM) %>%
   pivot_longer(!c(loc,season2), names_to = 'Fraction', values_to='Volume')
 
 ################################################################################
@@ -125,10 +125,17 @@ ggplot(nitrate.ammonium, aes(x = season2, y = Volume, group_by = Nutrient)) +
 
 # DOC figures and statistics
 
-doc.summary <- doc %>% group_by(loc, season2, Fraction) %>% summarize(mean = mean(Volume), n = n(), sd = sd(Volume), se = sd/sqrt(n))
+doc.summary <- doc %>% filter(Fraction == 'TOM') %>% group_by(loc, season2) %>% na.omit() %>% summarise(mean = mean(Volume), sd = sd(Volume), n = n(), se=sd/sqrt(n))
 
-doc.summary$season2 <- factor(doc.summary$season2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'), 
-                              labels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
+doc.summary$season2 <- factor(doc.summary$season2, levels = c('17-Apr', '17-Aug', '17-Nov', '18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb', '19-Jun', '19-Oct'), 
+                              labels = c('2017-04', '2017-08', '2017-11', '2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02', '2019-10'))
+
+ggplot(doc.summary, aes(x = season2, y = mean, col = loc, group = loc)) +
+  geom_point(aes(shape = loc), size = 10) +
+  scale_x_discrete(drop = FALSE) + 
+  geom_line(linewidth = 1.3) +
+  scale_shape_manual(values = c(15,16, 17, 18))
+
 
 levene_test(doc[doc$Fraction == 'TOM',], Volume~loc)
 shapiro.test(doc[doc$Fraction == 'TOM',]$Volume)
