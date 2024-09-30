@@ -43,13 +43,15 @@ aoa.16s.sum2$season2 <- factor(aoa.16s.sum2$season2, levels = c('18-Apr', '18-Ju
                               labels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
 
 ggplot(aoa.16s.sum2[aoa.16s.sum2$loc == 'PW',], aes(x= season2, y = mean, group = Order)) + 
-  geom_col(aes(fill = Order), width = .95) + 
+  geom_col(aes(fill = Order), width = .98) + 
   scale_fill_manual(values = c("#A04000","#117A65","#7D3C98")) + 
   scale_color_manual(values = c("#A04000","#117A65","#7D3C98")) +
   labs(y = expression(paste(x10^{7}, ' 16S rRNA copies/g DW soil')), x = '') + 
-  scale_y_continuous(limits = c(0, 3.2e7), breaks = c(0, 1e7, 2e7, 3e7), labels = c('0.0', '1.0', '2.0', '3.0')) +
+  scale_y_continuous(limits = c(0, 3.5e7), breaks = c(0, 1e7, 2e7, 3e7), labels = c('0.0', '1.0', '2.0', '3.0'),
+                     expand = c(0,0)) +
   scale_x_discrete(drop = FALSE) + 
-  geom_errorbar(aes(ymax = mean + se, ymin = mean, color = Order), width = 0.1, linewidth = 1) +
+  geom_errorbar(data = aoa.16s.sum2[aoa.16s.sum2$loc == 'PW' & aoa.16s.sum2$Order == 'Nitrososphaerales',],
+                aes(ymax = mean + se, ymin = mean-100000), width = 0.1, linewidth = 1, col = "#7D3C98") +
   theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
@@ -59,13 +61,15 @@ ggplot(aoa.16s.sum2[aoa.16s.sum2$loc == 'PW',], aes(x= season2, y = mean, group 
         aspect.ratio = 1)
 
 ggplot(aoa.16s.sum2[aoa.16s.sum2$loc == 'CW',], aes(x= season2, y = mean, group = Order)) + 
-  geom_col(aes(fill = Order), width = .95) + 
+  geom_col(aes(fill = Order), width = .98) + 
   scale_fill_manual(values = c("#A04000","#117A65","#7D3C98")) + 
   scale_color_manual(values = c("#A04000","#117A65","#7D3C98")) +
   labs(y = expression(paste(x10^{6}, ' 16S rRNA copies/g DW soil')), x = '') + 
-  scale_y_continuous(limits = c(0, 5e6), breaks = c(0, 1e6, 2e6, 3e6, 4e6, 5e6), labels = c('0.0', '1.0', '2.0', '3.0', '4.0', '5.0')) +
+  scale_y_continuous(limits = c(0, 5e6), breaks = c(0, 1e6, 2e6, 3e6, 4e6, 5e6), labels = c('0.0', '1.0', '2.0', '3.0', '4.0', '5.0'),
+                     expand = c(0,0)) +
   scale_x_discrete(drop = FALSE) + 
-  geom_errorbar(aes(ymax = mean + se, ymin = mean, color = Order), width = 0.1, linewidth = 1) +
+  geom_errorbar(data = aoa.16s.sum2[aoa.16s.sum2$loc == 'CW' & aoa.16s.sum2$Order == 'Ca. Nitrosotaleales',],
+                aes(ymax = mean + se, ymin = mean-10000), width = 0.1, linewidth = 1, col = "#117A65") +
   theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=15,face = "bold"),
         title = element_text(size = 20, face = 'bold'),
         panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
