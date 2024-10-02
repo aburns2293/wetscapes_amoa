@@ -15,6 +15,7 @@
 library(dplyr)
 library(ggplot2)
 library(cowplot)
+library(rstatix)
 
 ################################################################################
 # Data upload                                                                  #
@@ -65,6 +66,19 @@ aoa.16s.pw <- ggplot(aoa.16s.sum2[aoa.16s.sum2$loc == 'PW',], aes(x= season2, y 
         legend.background = element_blank(),
         aspect.ratio = 1)
 
+## statistics
+
+aoa.16s.sum3 <- aoa.16s.sum %>% group_by(loc, season2, group) %>% dplyr::summarise(sum = sum(tot_abundance))
+
+leveneTest(sum~season2, aoa.16s.sum3[aoa.16s.sum3$loc == 'PW',])
+shapiro.test(aoa.16s.sum3[aoa.16s.sum3$loc == 'PW',]$sum)
+figs <- lm(sum~season2, aoa.16s.sum3[aoa.16s.sum3$loc == 'PW',])
+plot(figs)
+
+summary(aov(sum~season2, aoa.16s.sum3[aoa.16s.sum3$loc == 'PW',]))
+TukeyHSD(aov(sum~season2, aoa.16s.sum3[aoa.16s.sum3$loc == 'PW',]))
+
+## cw
 aoa.16s.cw <- ggplot(aoa.16s.sum2[aoa.16s.sum2$loc == 'CW',], aes(x= season2, y = mean, group = Order)) + 
   geom_col(aes(fill = Order), width = .98) + 
   scale_fill_manual(values = c("#A04000","#117A65","#7D3C98")) + 
@@ -84,6 +98,8 @@ aoa.16s.cw <- ggplot(aoa.16s.sum2[aoa.16s.sum2$loc == 'CW',], aes(x= season2, y 
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank(),
         aspect.ratio = 1)
+
+## no statistics necessary for CW AOA, only one time point
 
 ## 16S AOB
 
@@ -114,6 +130,18 @@ aob.16s.pw <- ggplot(aob.16s.sum2[aob.16s.sum2$loc == 'PW',], aes(x= season2, y 
         legend.background = element_blank(),
         aspect.ratio = 1)
 
+## statistics
+
+aob.16s.sum3 <- aob.16s.sum %>% group_by(loc, season2, group) %>% dplyr::summarise(sum = sum(tot_abundance))
+
+leveneTest(sum~season2, aob.16s.sum3[aob.16s.sum3$loc == 'PW',])
+shapiro.test(aob.16s.sum3[aob.16s.sum3$loc == 'PW',]$sum)
+figs <- lm(sum~season2, aob.16s.sum3[aob.16s.sum3$loc == 'PW',])
+plot(figs)
+
+summary(aov(sum~season2, aob.16s.sum3[aob.16s.sum3$loc == 'PW',]))
+TukeyHSD(aov(sum~season2, aob.16s.sum3[aob.16s.sum3$loc == 'PW',]))
+
 aob.16s.cw <- ggplot(aob.16s.sum2[aob.16s.sum2$loc == 'CW',], aes(x= season2, y = mean, group = Order)) + 
   geom_col(aes(fill = Order), width = .98) + 
   scale_fill_manual(values = c("#F0C808",'#499DD4')) + 
@@ -132,6 +160,51 @@ aob.16s.cw <- ggplot(aob.16s.sum2[aob.16s.sum2$loc == 'CW',], aes(x= season2, y 
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank(),
         aspect.ratio = 1)
+
+leveneTest(sum~season2, aob.16s.sum3[aob.16s.sum3$loc == 'CW',])
+shapiro.test(aob.16s.sum3[aob.16s.sum3$loc == 'CW',]$sum)
+figs <- lm(sum~season2, aob.16s.sum3[aob.16s.sum3$loc == 'CW',])
+plot(figs)
+
+summary(aov(sum~season2, aob.16s.sum3[aob.16s.sum3$loc == 'CW',]))
+TukeyHSD(aov(sum~season2, aob.16s.sum3[aob.16s.sum3$loc == 'CW',]))
+
+## overall summary statistics
+
+### aoa pw vs. aoa cw
+
+leveneTest(sum~loc, aoa.16s.sum3[aoa.16s.sum3$loc == 'CW' | aoa.16s.sum3$loc == 'PW',])
+shapiro.test(aoa.16s.sum3[aoa.16s.sum3$loc == 'CW' | aoa.16s.sum3$loc == 'PW',]$sum)
+
+kruskal.test(aoa.16s.sum3[aoa.16s.sum3$loc == 'CW' | aoa.16s.sum3$loc == 'PW',], sum~loc)
+
+### aob pw vs. aob cw
+
+leveneTest(sum~loc, aob.16s.sum3[aob.16s.sum3$loc == 'CW' | aob.16s.sum3$loc == 'PW',])
+shapiro.test(aob.16s.sum3[aob.16s.sum3$loc == 'CW' | aob.16s.sum3$loc == 'PW',]$sum)
+
+kruskal.test(aob.16s.sum3[aob.16s.sum3$loc == 'CW' | aob.16s.sum3$loc == 'PW',], sum~loc)
+
+### aoa pw vs. aob pw
+
+aob.16s.sum3$Organism <- 'AOB'
+aoa.16s.sum3$Organism <- 'AOA'
+
+pw.16s <- rbind(aoa.16s.sum3[aoa.16s.sum3$loc == 'PW',], aob.16s.sum3[aob.16s.sum3$loc == 'PW',])
+
+leveneTest(sum~Organism, pw.16s)
+shapiro.test(pw.16s$sum)
+
+kruskal.test(pw.16s, sum~Organism)
+
+### aoa cw vs. aob cw
+
+cw.16s <- rbind(aoa.16s.sum3[aoa.16s.sum3$loc == 'CW',], aob.16s.sum3[aob.16s.sum3$loc == 'CW',])
+
+leveneTest(sum~Organism, cw.16s)
+shapiro.test(cw.16s$sum)
+
+kruskal.test(cw.16s, sum~Organism)
 
 ## SSU AOA PW
 
