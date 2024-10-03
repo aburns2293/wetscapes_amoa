@@ -26,7 +26,12 @@ library(stringr)
 
 rt.qpcr <- read.csv('Data/amoa.rtqpcr.csv')
 
-rt.summary <- rt.qpcr %>% group_by(Site, Date, Domain) %>% summarise(Mean = mean(Abundance), SD = sd(Abundance), n = n(), SE = SD/sqrt(n))
+rt.qpcr$Drought_Status <- "NA"
+
+rt.qpcr[rt.qpcr$Date %in% c('2018-04', '2018-12', '2019-02'),]$Drought_Status <- 'Non-drought'
+rt.qpcr[rt.qpcr$Date %in% c('2018-06', '2018-08', '2018-10'),]$Drought_Status <- 'Drought'
+
+rt.summary <- rt.qpcr %>% group_by(Site, Date, Domain, Drought_Status) %>% summarise(Mean = mean(Abundance), SD = sd(Abundance), n = n(), SE = SD/sqrt(n))
 
 rt.summary$Date <- factor(rt.summary$Date, levels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
 
@@ -53,46 +58,45 @@ full.summary <- full %>% na.omit() %>% group_by(Site, Type, Domain, Date) %>% su
 # Figures and Statistics                                                       #
 ################################################################################
 
-# PD
-ggplot(rt.summary[rt.summary$Site == 'PD' ,], aes(x = Date, y = Mean, col = Domain, group = Domain)) +
-  geom_point(aes(shape = Domain), size = 10) + 
-  geom_line(linewidth = 1.3) + 
-  theme_classic() + 
-  geom_errorbar(aes(ymax = Mean + SE, ymin = Mean, color = Domain), width = 0.1, linewidth = 1) +
-  scale_shape_manual(values = c(15,17)) + 
-  scale_color_manual(values = c("#A04000","#117A65","#7D3C98")) + 
-  scale_y_continuous(limits = c(0, 1.5e8), breaks = c(0, 0.5e8, 1e8, 1.5e8), labels = c(0.0,0.5, 1.0,1.5)) +
-  scale_x_discrete(drop = FALSE) + 
-  labs(y = expression(paste('amoA  ', x10^{8}, ' copies/g DW soil')), x = '') + 
-  theme(axis.title=element_text(size=20,face = "bold"),
-        axis.title.y=element_text(margin = margin(l = 60)),
-        axis.text=element_text(size=20,face = "bold"),
-        title = element_text(size = 20, face = 'bold'),
-        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
-        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
-        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
-        legend.background = element_blank())
+# PW AOB
 
-# PW
-ggplot(rt.summary[rt.summary$Site == 'PW',], aes(x = Date, y = Mean, col = Domain, group = Domain)) +
-  geom_point(aes(shape = Domain), size = 10) + 
+ggplot(rt.summary[rt.summary$Site == 'PW' & rt.summary$Domain == "AOB" ,], aes(x = Date, y = Mean, group = 1)) +
+  geom_point(aes(col = Drought_Status), size = 10) + 
   geom_line(linewidth = 1.3) + 
   theme_classic() + 
-  geom_errorbar(aes(ymax = Mean + SE, ymin = Mean, color = Domain), width = 0.1, linewidth = 1) +
+  geom_errorbar(aes(ymax = Mean + SE, ymin = Mean+10000000, color = Drought_Status), width = 0.1, linewidth = 1) +
   scale_shape_manual(values = c(15,17)) + 
   scale_color_manual(values = c("#A04000","#117A65")) + 
-  scale_y_continuous(limits = c(0, 4.3e8), breaks = c(0, 1e8, 2e8, 3e8, 4e8), labels = c('0.0','1.0','2.0','3.0','4.0')) +
+  scale_y_continuous(limits = c(0, 6.3e8), breaks = c(0, 2e8, 4e8, 6e8), labels = c('0.0','2.0','4.0','6.0')) +
   scale_x_discrete(drop = FALSE) + 
   labs(y = expression(paste(x10^{8}, ' copies/g DW soil')), x = '') + 
+  guides(color = "none") +
+  labs(y = expression(paste(x10^{7}, ' copies/g DW soil')), x = '') + 
   theme(axis.title=element_text(size=20,face = "bold"),
-        axis.title.y=element_text(margin = margin(l = 60)),
-        axis.text.x = element_text(angle=45, vjust = 0.6),
         axis.text=element_text(size=20,face = "bold"),
+        axis.text.x=element_text(angle=45, hjust=1),
         title = element_text(size = 20, face = 'bold'),
-        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        axis.line = element_line(linewidth = 1.3),
         panel.background = element_rect(fill = NA),panel.grid.major = element_blank(),legend.position = c(0.9,0.9),
         legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
         legend.background = element_blank(),
+        aspect.ratio = 1)
+
+ggplot(rt.qpcr[rt.qpcr$Site == "PW" & rt.qpcr$Domain == "AOB",], aes(x = Drought_Status, y = Abundance)) +
+  geom_boxplot(aes(fill = Drought_Status), outlier.size = 4) +
+  theme_classic() + 
+  xlab("") +
+  ylab("") +
+  guides(fill = "none") +
+  scale_fill_manual(values = c("#A04000","#117A65")) + 
+  scale_y_continuous(limits = c(0, 6e8), breaks = c(0, 1e8, 2e8, 3e8, 4e8), labels = c('0.0','1.0','2.0','3.0','4.0')) +
+  theme(axis.title=element_text(size=20,face = "bold"),
+        axis.text.x=element_blank(),
+        axis.line.y=element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        title = element_text(size = 20, face = 'bold'),
+        axis.line.x = element_line(linewidth = 1.3, color = "black", linetype = "dashed"),
         aspect.ratio = 1)
 
 # CW
