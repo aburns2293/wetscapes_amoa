@@ -254,8 +254,8 @@ TukeyHSD(aov(Total ~ Date, ssu.prok[ssu.prok$Site == 'PW'& ssu.prok$Domain == 'A
 
 shapiro_test(ssu.prok[ssu.prok$Site == 'PW' & ssu.prok$Domain == 'AOA',]$Total)
 levene_test(ssu.prok[ssu.prok$Site == 'PW'& ssu.prok$Domain == 'AOA',], Total ~ Date)
-summary(aov(Total ~ Date, ssu.prok[ssu.prok$Site == 'PW'& ssu.prok$Domain == 'AOA',]))
-TukeyHSD(aov(Total ~ Date, ssu.prok[ssu.prok$Site == 'PW'& ssu.prok$Domain == 'AOA',]))
+kruskal.test(Total ~ Date, ssu.prok[ssu.prok$Site == 'PW'& ssu.prok$Domain == 'AOA',])
+dunn_test(Total ~ Date, data = ssu.prok[ssu.prok$Site == 'PW'& ssu.prok$Domain == 'AOA',])
 
 ggplot(ssu.prok.sum[ssu.prok.sum$Site == 'CW',], aes(x = Date, y = mean, col = Domain, group = Domain)) + 
   geom_point(aes(shape = Domain), size = 10) + 

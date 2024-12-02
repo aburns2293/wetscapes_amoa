@@ -22,12 +22,16 @@ library(rstatix)
 # Data upload                                                                  #
 ################################################################################
 
-mrna.tax <- read.csv('./Data/kegg.nitrogencycle.gene.tax.csv')
+nit.tax <- read.csv('./Data/kegg.nitrogencycle.gene.tax.csv')
 
-kegg <- read.csv('./Data/kegg.nitrogencycle.gene.abundance.csv')
+nit.kegg <- read.csv('./Data/kegg.nitrogencycle.gene.abundance.csv')
 
-mrna.sample <- read.csv('./Data/kegg.nitrogencycle.sample.csv')
-mrna.sample$ID2 <- str_c(mrna.sample$sample, mrna.sample$month, sep = '_')
+peptido.kegg <- read.csv('./Data/kegg.peptidoglycan.abundance.csv')
+
+peptido.tax <- read.csv('./Data/kegg.peptidoglycan.tax.csv')
+
+sample <- read.csv('./Data/kegg.nitrogencycle.sample.csv')
+sample$ID2 <- str_c(mrna.sample$sample, mrna.sample$month, sep = '_')
 
 ################################################################################
 # Functions                                                                    #
@@ -239,8 +243,8 @@ ggplot(denit.dynamic.sum[denit.dynamic.sum$Site == 'PW',], aes(x = Date, y = mea
         legend.background = element_blank())
 
 gene.test('PW', 'NirB', denit.long)
-kruskal.test(Abundance~Date, denit.long[denit.long$Site == 'PW' & denit.long$Gene == 'NarH',])
-dunn_test(Abundance~Date, data = denit.long[denit.long$Site == 'PW' & denit.long$Gene == 'NarH',])
+kruskal.test(Abundance~Date, denit.long[denit.long$Site == 'PW' & denit.long$Gene == 'NarG',])
+dunn_test(Abundance~Date, data = denit.long[denit.long$Site == 'PW' & denit.long$Gene == 'NarG',], p.adjust.method = 'BH')
 
 ggplot(denit.dynamic.sum[denit.dynamic.sum$Site == 'CW',], aes(x = Date, y = mean, col = Gene)) + 
   geom_point(size = 4) + 
@@ -477,3 +481,38 @@ TukeyHSD(aov(Abundance~Date, dynamic.long[dynamic.long$Site == 'CW' & dynamic.lo
 kruskal_test(formula = Abundance~Date, data = dynamic.long[dynamic.long$Site == 'CW' & dynamic.long$Gene == 'amoA',])
 dunn_test(formula = Abundance~Date, data = dynamic.long[dynamic.long$Site == 'CW' & dynamic.long$Gene == 'amoA',])
 
+# peptidoglycan biosynthesis and degradation
+
+peptido.kegg$Subsample <- str_sub(peptido.kegg$Sample, 1, 3)
+peptido.kegg$Site <- str_sub(peptido.kegg$Sample, 1, 2)
+peptido.kegg$Date <- str_sub(peptido.kegg$Sample, 5)
+peptido.kegg$Date <- factor(peptido.kegg$Date, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'),
+                            labels = c('2018-04', '2018-06', '2018-08', '2018-10', '2018-12', '2019-02'))
+
+peptido.long <- pivot_longer(peptido.kegg, cols = !c('Subsample', 'Sample', 'Site', 'Date'), names_to = 'KEGG_Code', values_to = 'Abundance')
+
+peptido.full <- left_join(peptido.long, peptido.tax, by = join_by(KEGG_Code == X))
+
+peptido.sum <- peptido.full %>% group_by(L2, Site, Date, Subsample) %>% summarise(sum = sum(Abundance))
+
+peptido.sum <- peptido.sum %>% filter(L2 == 'Metabolism')
+
+peptido.means <- peptido.sum %>% group_by(Site, Date) %>% summarise(mean = mean(sum), sd = sd(sum), n = n(), se = sd/sqrt(n))
+
+ggplot(peptido.means, aes(x = Date, y = mean, col = Site, group = Site, shape = Site)) + 
+  geom_point(size = 10) + 
+  geom_line(size = 1.3) +
+  geom_errorbar(aes(ymax = mean + se, ymin = mean), width = 0.1, size = 1) +
+  labs(y = expression(paste(x10^{9}, ' transcripts/g DW soil')), x = '') + 
+  scale_y_continuous(limits = c(0, 1e10), breaks = c(0, 3e9, 6e9, 9e9), labels = c('0.0', '3.0', '6.0', '9.0')) +
+  scale_x_discrete(drop = FALSE) + 
+  scale_shape_manual(values = c(15,17)) + 
+  scale_color_manual(values = c("#A04000","#117A65")) + 
+  theme(axis.title=element_text(size=20,face = "bold"),axis.text=element_text(size=20,face = "bold"),
+        title = element_text(size = 20, face = 'bold'),
+        panel.border = element_rect(linetype = "solid", colour = "black", fill = NA, size=2),
+        panel.background = element_rect(fill = NA),panel.grid.major = element_blank(), legend.position = c(0.9,0.9),
+        legend.text = element_text(size = 15),legend.key = element_rect(fill = NA),legend.title = element_blank(),
+        legend.background = element_blank(),
+        axis.text.x = element_text(angle=45, vjust = 0.6),
+        aspect.ratio = 1)
