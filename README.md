@@ -1,8 +1,5 @@
 # Ammonia oxidizing archaea and bacteria respond dynamically to drought in rewetted fen peatlands
 ## Anna Burns, Melina Kerou, Dominik Zak, Christa Schleper, Tim Urich and Haitao Wang
-## In progress
-
-This is the Git repository for the manuscript [TBD], investigating the impact of extreme drought on nitrifying microbes in rewetted temperate fens, with a particular focus on quantifying the differing responses of ammonia oxidizing archaea and bacteria.
 
 The following data and scripts are included:
 
