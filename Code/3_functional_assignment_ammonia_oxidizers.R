@@ -52,15 +52,15 @@ ggplot(potential.comammox) + geom_histogram(aes(x = PercID), binwidth = 0.5) +
   theme_classic() + 
   xlab('% ID Match') + 
   ggtitle('Comammox Blast Results', subtitle ='Suggested ID cutoff at 97.5%') +
-  geom_vline(xintercept = 97.5, col = 'blue', linewidth = 2)
+  geom_vline(xintercept = 99, col = 'blue', linewidth = 2)
 
 ## separating all hits with a Blast ID Match > 97.5% and adding their taxonomic/sample data
 
-comammox_975 <- potential.comammox %>% filter(PercID >= 97.5) 
+comammox_99 <- potential.comammox %>% filter(PercID >= 99) 
 
-comammox_975_list <- as.vector(comammox_975$ASV) %>% unique()
+comammox_99_list <- as.vector(comammox_99$ASV) %>% unique()
 
-comammox.absolute <- absolute.abundance[,colnames(absolute.abundance) %in% comammox_975_list]
+comammox.absolute <- absolute.abundance[,colnames(absolute.abundance) %in% comammox_99_list]
 
 comammox.absolute <- t(comammox.absolute)
 
@@ -178,11 +178,11 @@ asv.t <- t(asv)
 
 rel.abundance <- decostand(asv.t, method = 'total')
 
-comammox_975 <- potential.comammox %>% filter(PercID >= 97.5) 
+comammox_99 <- potential.comammox %>% filter(PercID >= 99) 
 
-comammox_975_list <- as.vector(comammox_975$ASV) %>% unique()
+comammox_99_list <- as.vector(comammox_99$ASV) %>% unique()
 
-comammox.rel <- rel.abundance[,colnames(rel.abundance) %in% comammox_975_list]
+comammox.rel <- rel.abundance[,colnames(rel.abundance) %in% comammox_99_list]
 
 max(comammox.rel)
 
@@ -216,3 +216,68 @@ pw.comammox.rel <- drought.comammox.rel[str_detect(rownames(drought.comammox.rel
 
 max(pw.comammox.rel)
 mean(pw.comammox.rel)
+
+cw.comammox.rel <- drought.comammox.rel[str_detect(rownames(drought.comammox.rel), 'CW') == TRUE,]
+
+max(cw.comammox.rel)
+mean(cw.comammox.rel)
+
+# comparison between aob, aoa and comammox
+
+asv <- asv %>% column_to_rownames(var = 'ID')
+tax <- tax %>% column_to_rownames(var = 'ID')
+
+wetscapes.ps <- phyloseq(tax_table(as.matrix(tax)),
+                         otu_table(data.matrix(asv), taxa_are_rows = TRUE),
+                         sample_data(sample))
+
+wetscapes.ps.rel <- transform_sample_counts(wetscapes.ps, function(x) x/sum(x))
+
+ao.tax <- tax %>% filter(Order == 'Nitrosomonadales' |
+                           Class == 'Nitrososphaeria' |
+                           Order == 'Nitrospirales')
+
+ao.ids <- as.vector(rownames(ao.tax))
+
+ao.ps.rel <- subset_taxa(wetscapes.ps.rel, taxa_names(wetscapes.ps.rel) %in% ao.ids)
+
+ao.ps.melt <- psmelt(ao.ps.rel)
+
+ao.ps.melt <- ao.ps.melt %>% filter(Abundance > 0)
+
+ao.ps.melt$AO_Group <- NA
+
+ao.ps.melt[ao.ps.melt$Domain == 'Bacteria',]$AO_Group <- 'AOB'
+ao.ps.melt[ao.ps.melt$Domain == 'Archaea',]$AO_Group <- 'AOA'
+ao.ps.melt[ao.ps.melt$OTU %in% comammox_975_list,]$AO_Group <- 'Comammox'
+
+ao.ps.melt <- ao.ps.melt %>% mutate(Abundance_Perc = Abundance * 100) %>% filter(depth == '05-10 cm', 
+                                                                                 loc %in% c('PW', 'CW'),
+                                                                                 season2 %in% c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
+
+ao.ps.melt.sum <- ao.ps.melt %>% group_by(loc, season2, group, AO_Group) %>% summarise(Total_Abundance = sum(Abundance_Perc))
+ao.ps.melt.mean <- ao.ps.melt.sum %>% group_by(loc, season2, AO_Group) %>% summarise(Mean_Abundance = mean(Total_Abundance),
+                                                                                            sd = sd(Total_Abundance),
+                                                                                            n = n(),
+                                                                                            se = sd/sqrt(n))
+
+ao.ps.melt.mean$season2 <- factor(ao.ps.melt.mean$season2, levels = c('18-Apr', '18-Jun', '18-Aug', '18-Oct', '18-Dec', '19-Feb'))
+ao.ps.melt.mean$AO_Group <- factor(ao.ps.melt.mean$AO_Group, levels = c('AOB', 'AOA', 'Comammox'))
+
+ggplot(ao.ps.melt.mean[ao.ps.melt.mean$AO_Group == 'Comammox',], aes(x = season2, y = Mean_Abundance)) + 
+  geom_point(size = 6) + 
+  geom_line(linewidth = 1.3, aes(group = 1)) +
+  geom_errorbar(aes(ymax = Mean_Abundance + se, ymin = Mean_Abundance), width = 0.1, linewidth = 1) + 
+  xlab('') + 
+  ylab('Relative Abundance [%]') + 
+  scale_y_continuous(limits = c(0, 0.65)) +
+  ggtitle('Relative abundance of potential comammox ASVs, PW') + 
+  theme_classic() + 
+  theme(axis.text = element_text(size = 16),
+        axis.title = element_text(size = 16),
+        plot.title = element_text(size = 20))
+
+comammox.melt <- ao.ps.melt %>% filter(AO_Group == 'Comammox')
+comammox.melt$OTU %>% unique()
+mean(comammox.melt$Abundance_Perc)
+sd(comammox.melt$Abundance_Perc)

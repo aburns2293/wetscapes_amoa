@@ -356,7 +356,6 @@ full_drought_wt$Date <- as.Date(full_drought_wt$Date)
 
 # Groundwater table depth with drought thresholds
 
-water_table_summary$Date <- mdy(water_table_summary$Date)
 drought2018 <- interval(start = "2018-03-15", end = "2019-02-28")
 water_table_drought2018 <- water_table_summary[which(water_table_summary$Date %within% drought2018),]
 

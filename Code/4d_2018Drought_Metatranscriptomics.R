@@ -29,6 +29,8 @@ aob <- read.csv('Data/mRNA.aob.absolute.csv')
 
 ssu.prok <- read.csv('Data/16srRNA.ssu.csv')
 
+rt.qpcr <- read.csv('Data/amoa.rtqpcr.csv')
+
 ################################################################################
 # Functions                                                                    #
 ################################################################################
@@ -289,3 +291,29 @@ shapiro_test(ssu.prok[ssu.prok$Site == 'CW' & ssu.prok$Domain == 'AOA',]$Total)
 levene_test(ssu.prok[ssu.prok$Site == 'CW'& ssu.prok$Domain == 'AOA',], Total ~ Date)
 kruskal.test(ssu.prok[ssu.prok$Site == 'CW'& ssu.prok$Domain == 'AOA',], Total ~ Date)
 dunn_test(ssu.prok[ssu.prok$Site == 'CW'& ssu.prok$Domain == 'AOA',], Total ~ Date, p.adjust.method = 'bonferroni')
+
+# Comparison between RT-qPCR results and metatranscriptomes for amoA
+
+aoa.comp <- aoa %>% filter(Site == 'CW' & Subunit == 'amo-A' | Site == 'PW' & Subunit == 'amo-A')
+aoa.rt.comp <- rt.qpcr %>% filter(Site == 'CW' & Domain == 'AOA' | Site == 'PW' & Domain == 'AOA')
+aoa.comp$Sample <- str_c('RNA.', aoa.comp$month, aoa.comp$sample, '05')
+aoa.comp$Sample <- str_replace(aoa.comp$Sample, '-', '')
+aoa.comp[aoa.comp$Sample == 'RNA.18AprPW2-105',]$Sample <- 'RNA.18AprPW105'
+aoa.comp[aoa.comp$Sample == 'RNA.18AprPW2-205',]$Sample <- 'RNA.18AprPW305'
+
+aoa.comp.full <- full_join(aoa.comp, aoa.rt.comp, by = 'Sample')
+
+ggplot(aoa.comp.full[aoa.comp.full$Site.x == 'PW',], aes(x = Amount, y = Abundance)) + geom_point() +
+  xlab('mRNA transcripts/g DW soil') +
+  ylab('RT-qPCR RNA transcripts/g DW soil') +
+  geom_abline(intercept = 0, slope = 1, linetype = 'dashed') +
+  geom_smooth(method = 'lm', se = FALSE) +
+  ggtitle('Comparison methods for archaeal amoA transcript quantification in PW site',
+          subtitle = 'Dashed line = 1:1 relationship, Blue line = Linear fit') +
+  theme_classic() +
+  scale_x_continuous(limits = c(0, 6e7), breaks = c(2e7, 4e7, 6e7)) +
+  theme(axis.title = element_text(size = 14),
+        axis.text = element_text(size = 14),
+        aspect.ratio = 1)
+
+cor(aoa.comp.full[aoa.comp.full$Site.x == 'PW',]$Amount, aoa.comp.full[aoa.comp.full$Site.x == 'PW',]$Abundance  )
